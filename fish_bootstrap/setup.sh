@@ -31,16 +31,17 @@ cat >> ~/.config/fish/config.fish << EOF
 source $CURDIR/.aliasrc
 EOF
 
-# use bash profile?
-# omf install foreign-env
-# fenv source ~/.profile
-
 
 # tmux
 mkdir -p $CURDIR/tmux/plugins
 [[ -d ~/.tmux ]] || ln -s $CURDIR/tmux ~/.tmux
 [[ -f ~/.tmux.conf ]] || ln -s $CURDIR/.tmux.conf ~/.tmux.conf
 [[ -d ~/.tmux/plugins/tpm ]] || git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
+# vim
+curl -fLo ./vim/autoload/plug.vim --create-dirs \
+  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+[[ -d ~/.vim ]] || ln -s $CURDIR/vim ~/.vim
 
 
 # 'EOF' to prevent expansion
