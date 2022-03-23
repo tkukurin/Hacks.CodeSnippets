@@ -2,18 +2,19 @@
 
 CURDIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 echo Current directory set to $CURDIR
+read x
 
 sudo apt-get update
 sudo apt-get upgrade
 sudo apt-add-repository ppa:fish-shell/release-3 
 sudo apt-get install \
   build-essential \
-	cargo \
-	fzf \
-	ripgrep \
-	git \
-	tmux \
-	fish
+  cargo \
+  fzf \
+  ripgrep \
+  git \
+  tmux \
+  fish
 
 sudo snap install go --classic  # can't just untar go due to ARM
 
@@ -21,7 +22,8 @@ cargo install exa
 cargo install bat
 
 # oh-my-fish
-curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install | fish -s --noninteractive
+curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install | \
+  argv='--noninteractive' fish
 
 mkdir -p ~/.config/fish/functions/
 echo fzf_key_bindings > ~/.config/fish/functions/fish_user_key_bindings.fish
@@ -46,7 +48,7 @@ mkdir -p $CURDIR/tmux/plugins
 cat >> ~/.bashrc << 'EOF'
 
 if [ -d "$HOME/.cargo/bin" ]; then
-    PATH="$HOME/.cargo/bin:$PATH"
+  PATH="$HOME/.cargo/bin:$PATH"
 fi
 
 [[ $(which bat) ]] && export PAGER=bat || export PAGER=less
