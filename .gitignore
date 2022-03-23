@@ -1,2 +1,9 @@
 
 fish_bootstrap/tmux/plugins
+fish_bootstrap/vim/autoload
+fish_bootstrap/vim/plugged
+fish_bootstrap/vim/sessions
+fish_bootstrap/vim/view
+fish_bootstrap/vim/backup
+fish_bootstrap/vim/.*
+
