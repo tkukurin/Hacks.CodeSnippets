@@ -25,6 +25,15 @@ cargo install bat
 curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install | \
   argv='--noninteractive' fish
 
+# see some packages https://github.com/oh-my-fish/packages-main/tree/master/packages
+# omf install fzf ?
+# Ctrl-t	Ctrl-o	Find a file.
+# Ctrl-r	Ctrl-r	Search through command history.
+# Alt-c	Alt-c	cd into sub-directories (recursively searched).
+# Alt-Shift-c	Alt-Shift-c	cd into sub-directories, including hidden ones.
+# Ctrl-o	Alt-o	Open a file/dir using default editor ($EDITOR)
+# Ctrl-g	Alt-Shift-o	Open a file/dir using xdg-open or open command
+
 mkdir -p ~/.config/fish/functions/
 echo fzf_key_bindings > ~/.config/fish/functions/fish_user_key_bindings.fish
 cat >> ~/.config/fish/config.fish << EOF
