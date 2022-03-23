@@ -3,3 +3,9 @@ alias ls=exa
 alias cat=bat
 alias v=vim
 
+alias ga='git add'
+alias gs='git status'
+alias gc='git commit'
+alias gp='git push'
+alias gpom='git push origin master'
+
