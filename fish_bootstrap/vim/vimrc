@@ -7,6 +7,8 @@ try
 catch
 endtry
 
+set wildmode=longest,list,full
+
 " Load plugins
 let g:plug_shallow = 0
 call plug#begin()
@@ -20,6 +22,9 @@ Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'edkolev/tmuxline.vim', { 'on': [ 'Tmuxline', 'TmuxlineSimpe' ] }
 Plug 'edkolev/promptline.vim', { 'on': 'PromptlineSnapshot' }
+
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
 
 " Git
 Plug 'airblade/vim-gitgutter'
@@ -38,6 +43,26 @@ Plug 'tomtom/tcomment_vim'
 Plug 'tpope/vim-eunuch'
 
 call plug#end()
+
+
+" https://github.com/junegunn/fzf/blob/master/README-VIM.md
+" Some useful fzf commands: `:Files, :Buffers, :Rg, :Commits, :GFiles`
+inoremap <expr> <c-x><c-k> fzf#vim#complete('cat /usr/share/dict/words')
+" Global line completion (not just open buffers. ripgrep required.)
+inoremap <expr> <c-x><c-l> fzf#vim#complete(fzf#wrap({
+  \ 'prefix': '^.*$',
+  \ 'source': 'rg -n ^ --color always',
+  \ 'options': '--ansi --delimiter : --nth 3..',
+  \ 'reducer': { lines -> join(split(lines[0], ':\zs')[2:], '') }}))
+inoremap <expr> <c-x><c-f> fzf#vim#complete#path('rg --files')
+command! -bang -complete=dir -nargs=? LS
+    \ call fzf#run(fzf#wrap({'source': 'ls', 'dir': <q-args>}, <bang>0))
+
+" map <leader><leader> :buffers<CR>:b<space>
+nnoremap <leader><leader> :Buffers<CR>
+nnoremap <leader>f :Files<CR>
+nnoremap <leader>g :Rg<CR>
+
 
 " File-type
 filetype on
@@ -256,22 +281,20 @@ if &t_Co > 2 || has("gui_running")
 endif
 
 " Only do this part when compiled with support for autocommands.
-if has("autocmd")
-	" When editing a file, always jump to the last cursor position.
-	" http://vim.wikia.com/wiki/Restore_cursor_to_file_position_in_previous_editing_session
-	function! ResCur()
-		if line("'\"") <= line("$")
-			normal! g`"
-			return 1
-		endif
-	endfunction
-
-	augroup resCur
-		autocmd!
-		autocmd BufWinEnter * call ResCur()
-	augroup END
-
-endif " has("autocmd")
+" if has("autocmd")
+" 	" When editing a file, always jump to the last cursor position.
+" 	" http://vim.wikia.com/wiki/Restore_cursor_to_file_position_in_previous_editing_session
+" 	function! ResCur()
+" 		if line("'\"") <= line("$")
+" 			normal! g`"
+" 			return 1
+" 		endif
+" 	endfunction
+" 	augroup resCur
+" 		autocmd!
+" 		autocmd BufWinEnter * call ResCur()
+" 	augroup END
+" endif " has("autocmd")
 
 " open and close folds
 " Toggle fold state between closed and opened.
