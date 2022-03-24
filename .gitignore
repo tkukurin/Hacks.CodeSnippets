@@ -1,5 +1,7 @@
 
 fish_bootstrap/tmux/plugins
+fish_bootstrap/nvm/
+fish_bootstrap/pyenv/
 fish_bootstrap/vim/autoload
 fish_bootstrap/vim/plugged
 fish_bootstrap/vim/sessions
