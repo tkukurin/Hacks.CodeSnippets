@@ -1,12 +1,16 @@
 #!/bin/bash
 
+function waituser() {
+	echo $@ '> '
+	read __discard
+}
+
 CURDIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
-echo Current directory set to $CURDIR
-read x
+waituser "Current directory set to $CURDIR"
 
 sudo apt-get update
 sudo apt-get upgrade
-sudo apt-add-repository ppa:fish-shell/release-3 
+sudo apt-add-repository ppa:fish-shell/release-3
 sudo apt-get install \
   build-essential \
   cargo \
@@ -14,7 +18,8 @@ sudo apt-get install \
   ripgrep \
   git \
   tmux \
-  fish
+  fish \
+  python3-pip
 
 sudo snap install go --classic  # can't just untar go due to ARM
 
@@ -47,22 +52,50 @@ mkdir -p $CURDIR/tmux/plugins
 [[ -f ~/.tmux.conf ]] || ln -s $CURDIR/.tmux.conf ~/.tmux.conf
 [[ -d ~/.tmux/plugins/tpm ]] || git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
+
+# node
+#GH=https://raw.githubusercontent.com
+#waituser "Installing NVM"
+#curl -o- $GH/nvm-sh/nvm/v0.39.1/install.sh | bash
+
+[[ ! -d ~/.nvm ]] && export NVM_DIR="$HOME/.nvm" && (
+  git clone https://github.com/nvm-sh/nvm.git "$CURDIR/nvm"
+  ln -s "$CURDIR/nvm" "$NVM_DIR"
+  cd "$NVM_DIR"
+  git checkout `git describe --abbrev=0 --tags --match "v[0-9]*" $(git rev-list --tags --max-count=1)`
+) && . "$NVM_DIR/nvm.sh"
+
+omf install nvm  # bindings (note: some SHLVL error)
+
 # vim
 curl -fLo ./vim/autoload/plug.vim --create-dirs \
   https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 [[ -d ~/.vim ]] || ln -s $CURDIR/vim ~/.vim
 
 
-# 'EOF' to prevent expansion
-# TODO check if this exists in bashrc or something?
-cat >> ~/.bashrc << 'EOF'
+if grep -q "START inserted by install script" ~/.bashrc; then
+	echo "Already found .bashrc modification!"
+else
+	# 'EOF' to prevent expansion
+	cat >> ~/.bashrc << 'EOF'
+
+# START inserted by install script {{{
 
 if [ -d "$HOME/.cargo/bin" ]; then
   PATH="$HOME/.cargo/bin:$PATH"
 fi
 
+export PATH="$HOME/.local/bin:$PATH"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+export EDITOR=vim
 [[ $(which bat) ]] && export PAGER=bat || export PAGER=less
 [[ $(which fish) ]] && exec -l fish "$@"
 
-EOF
+# END inserted by install script }}}
 
+EOF
+fi
