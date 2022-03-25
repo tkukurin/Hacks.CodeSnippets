@@ -104,10 +104,10 @@ pdm completion fish > ~/.config/fish/completions/pdm.fish
 
 
 if grep -q "START inserted by install script" ~/.bashrc; then
-	echo "Already found .bashrc modification!"
+  echo "Already found .bashrc modification!"
 else
-	# 'EOF' to prevent expansion
-	cat >> ~/.bashrc << 'EOF'
+  # 'EOF' to prevent expansion
+  cat >> ~/.bashrc << 'EOF'
 
 # START inserted by install script {{{
 
