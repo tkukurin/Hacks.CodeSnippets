@@ -52,6 +52,14 @@ sudo snap install go --classic  # can't just untar go due to ARM
 
 cargo install exa
 cargo install bat
+cargo install viu  # view images in terminal
+
+# nnn with plugins ?
+# sudo apt-get install nnn
+# curl -Ls https://raw.githubusercontent.com/jarun/nnn/master/plugins/getplugs | sh
+
+# pdftotext
+sudo apt-get install poppler-utils
 
 # oh-my-fish
 curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install | \
