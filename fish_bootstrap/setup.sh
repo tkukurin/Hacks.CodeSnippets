@@ -1,8 +1,15 @@
 #!/bin/bash
+# Some Bash script to bootstrap a Fish-based Ubuntu install.
+# Untested, the best comment I can make is that it seems to work.
+# Installs everything to $CURDIR and makes symlinks from `~/.xyz`.
+# IME this approach is preferable for long-term maintenance.
+#
+# Instead of `chsh`, we source Fish at the end of `.bashrc`.
+# This approach facilitates sharing paths and whatnot.
 
 function waituser() {
-	echo $@ '> '
-	read __discard
+  echo $@ '> '
+  read __discard
 }
 
 CURDIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
