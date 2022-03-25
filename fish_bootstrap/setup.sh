@@ -21,6 +21,26 @@ sudo apt-get install \
   fish \
   python3-pip
 
+# pyenv requirements to build Python
+sudo apt-get install --no-install-recommends \
+  make \
+  build-essential \
+  libssl-dev \
+  zlib1g-dev \
+  libbz2-dev \
+  libreadline-dev \
+  libsqlite3-dev \
+  wget \
+  curl \
+  llvm \
+  libncurses5-dev \
+  xz-utils \
+  tk-dev \
+  libxml2-dev \
+  libxmlsec1-dev \
+  libffi-dev \
+  liblzma-dev
+
 sudo snap install go --classic  # can't just untar go due to ARM
 
 cargo install exa
@@ -44,6 +64,11 @@ echo fzf_key_bindings > ~/.config/fish/functions/fish_user_key_bindings.fish
 cat >> ~/.config/fish/config.fish << EOF
 source $CURDIR/.aliasrc
 EOF
+
+# pyenv
+omf install pyenv
+git clone https://github.com/pyenv/pyenv.git $CURDIR/pyenv
+ln -s $CURDIR/pyenv/ ~/.pyenv
 
 
 # tmux
@@ -72,6 +97,11 @@ curl -fLo ./vim/autoload/plug.vim --create-dirs \
   https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 [[ -d ~/.vim ]] || ln -s $CURDIR/vim ~/.vim
 
+export PATH="$HOME/.local/bin:$PATH"
+pip install --user pdm
+pdm --pep582 >> ~/.bashrc
+pdm completion fish > ~/.config/fish/completions/pdm.fish
+
 
 if grep -q "START inserted by install script" ~/.bashrc; then
 	echo "Already found .bashrc modification!"
@@ -85,6 +115,8 @@ if [ -d "$HOME/.cargo/bin" ]; then
   PATH="$HOME/.cargo/bin:$PATH"
 fi
 
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 
 export NVM_DIR="$HOME/.nvm"
