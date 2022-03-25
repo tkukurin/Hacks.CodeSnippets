@@ -26,8 +26,7 @@ sudo apt-get install \
   git \
   tmux \
   fish \
-  python3-pip \
-  fd-find
+  python3-pip
 
 # pyenv requirements to build Python
 sudo apt-get install --no-install-recommends \
@@ -54,6 +53,8 @@ sudo snap install go --classic  # can't just untar go due to ARM
 cargo install exa
 cargo install bat
 cargo install viu  # view images in terminal
+cargo install procs
+cargo install fd-find
 
 # nnn with plugins ?
 # sudo apt-get install nnn
