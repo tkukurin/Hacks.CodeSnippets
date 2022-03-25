@@ -57,6 +57,7 @@ cargo install viu  # view images in terminal
 # nnn with plugins ?
 # sudo apt-get install nnn
 # curl -Ls https://raw.githubusercontent.com/jarun/nnn/master/plugins/getplugs | sh
+# curl https://raw.githubusercontent.com/jarun/nnn/master/misc/quitcd/quitcd.fish --output $CURDIR/fishfn/n.fish
 
 # pdftotext
 sudo apt-get install poppler-utils
@@ -74,8 +75,9 @@ curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install 
 # Ctrl-o	Alt-o	Open a file/dir using default editor ($EDITOR)
 # Ctrl-g	Alt-Shift-o	Open a file/dir using xdg-open or open command
 
-mkdir -p ~/.config/fish/functions/
-echo fzf_key_bindings > ~/.config/fish/functions/fish_user_key_bindings.fish
+[[ -d ~/.config/fish/functions ]] \
+  && rmdir ~/.config/fish/functions \
+  && ln -s $CURDIR/fishfn ~/.config/fish/functions
 cat >> ~/.config/fish/config.fish << EOF
 source $CURDIR/.aliasrc
 EOF
