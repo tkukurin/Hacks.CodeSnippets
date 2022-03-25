@@ -26,7 +26,8 @@ sudo apt-get install \
   git \
   tmux \
   fish \
-  python3-pip
+  python3-pip \
+  fd-find
 
 # pyenv requirements to build Python
 sudo apt-get install --no-install-recommends \
@@ -127,6 +128,10 @@ else
   cat >> ~/.bashrc << 'EOF'
 
 # START inserted by install script {{{
+
+if [ -d "$HOME/go/bin" ]; then
+  PATH="$HOME/go/bin:$PATH"
+fi
 
 if [ -d "$HOME/.cargo/bin" ]; then
   PATH="$HOME/.cargo/bin:$PATH"
