@@ -75,6 +75,12 @@ sudo apt-get install poppler-utils
 curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install | \
   argv='--noninteractive' fish
 
+# docker on ARM
+# https://www.docker.com/blog/getting-started-with-docker-for-arm-on-linux/
+curl -fsSL test.docker.com -o get-docker.sh && sh get-docker.sh
+sudo usermod -aG docker $USER
+# need to logout and back in
+
 # see some packages https://github.com/oh-my-fish/packages-main/tree/master/packages
 # omf install fzf ?
 # Ctrl-t	Ctrl-o	Find a file.
