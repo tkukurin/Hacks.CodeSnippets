@@ -72,8 +72,8 @@ cargo install fd-find
 sudo apt-get install poppler-utils
 
 # oh-my-fish
-curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install | \
-  argv='--noninteractive' fish
+# curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install | \
+#   argv='--noninteractive' fish
 
 # docker on ARM
 # https://www.docker.com/blog/getting-started-with-docker-for-arm-on-linux/
@@ -98,7 +98,7 @@ source $CURDIR/.aliasrc
 EOF
 
 # pyenv
-omf install pyenv
+# omf install pyenv
 git clone https://github.com/pyenv/pyenv.git $CURDIR/pyenv
 ln -s $CURDIR/pyenv/ ~/.pyenv
 
@@ -122,7 +122,7 @@ mkdir -p $CURDIR/tmux/plugins
   git checkout `git describe --abbrev=0 --tags --match "v[0-9]*" $(git rev-list --tags --max-count=1)`
 ) && . "$NVM_DIR/nvm.sh"
 
-omf install nvm  # bindings (note: some SHLVL error)
+# omf install nvm  # bindings (note: some SHLVL error)
 
 # vim
 curl -fLo ./vim/autoload/plug.vim --create-dirs \
