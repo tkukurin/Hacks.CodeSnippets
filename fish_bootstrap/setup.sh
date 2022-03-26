@@ -50,11 +50,18 @@ sudo apt-get install --no-install-recommends \
 
 sudo snap install go --classic  # can't just untar go due to ARM
 
+# Just a bunch of Rust impls of things
 cargo install exa
 cargo install bat
 cargo install viu  # view images in terminal
-cargo install procs
 cargo install fd-find
+# cargo install procs?
+# cargo install bartib?
+# cargo install pier?
+# cargo install zoxide? z instead of cd
+# cargo install bottom?
+# cargo install du-dust?
+# cargo install gitui?
 
 # nnn with plugins ?
 # sudo apt-get install nnn
