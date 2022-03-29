@@ -1,16 +1,13 @@
 
+let mapleader = ","
+let g:mapleader = ","
+
 set nocompatible
 set fileformat=unix
 set fileformats=unix,dos,mac
-try
-	lang en_US
-catch
-endtry
+try | lang en_US | catch | endtry
 
-set wildmode=longest,list,full
-
-" Load plugins
-let g:plug_shallow = 0
+let g:plug_shallow = 0  " {{{
 call plug#begin()
 
 " Sensible defaults
@@ -36,17 +33,17 @@ Plug 'bronson/vim-trailing-whitespace'
 Plug 'rstacruz/sparkup'
 
 " Colors
-Plug 'ap/vim-css-color'
+" Plug 'ap/vim-css-color'
 
 " And the rest
 Plug 'tomtom/tcomment_vim'
 Plug 'tpope/vim-eunuch'
 
-call plug#end()
+call plug#end()  " }}}
 
 
+" FZF mappings {{{
 " https://github.com/junegunn/fzf/blob/master/README-VIM.md
-" Some useful fzf commands: `:Files, :Buffers, :Rg, :Commits, :GFiles`
 inoremap <expr> <c-x><c-k> fzf#vim#complete('cat /usr/share/dict/words')
 " Global line completion (not just open buffers. ripgrep required.)
 inoremap <expr> <c-x><c-l> fzf#vim#complete(fzf#wrap({
@@ -61,8 +58,22 @@ command! -bang -complete=dir -nargs=? LS
 " map <leader><leader> :buffers<CR>:b<space>
 nnoremap <leader><leader> :Buffers<CR>
 nnoremap <leader>f :Files<CR>
-nnoremap <leader>g :Rg<CR>
+nnoremap <leader>gg :Rg<CR>
+nnoremap <silent> <Leader>b :Buffers<CR>
+nnoremap <silent> <Leader>bl :BLines<CR>
+nnoremap <silent> <Leader>' :Marks<CR>
+nnoremap <silent> <Leader>gc :Commits<CR>
+nnoremap <silent> <Leader>gf :GFiles<CR>
+nnoremap <silent> <Leader>H :Helptags<CR>
+nnoremap <silent> <Leader>hh :History<CR>
+nnoremap <silent> <Leader>h: :History:<CR>
+nnoremap <silent> <Leader>h/ :History/<CR>
+" }}}
 
+
+nnoremap <leader>cd :cd %:p:h<CR>:pwd<CR>
+nnoremap <leader>vt :cd %:p:h<CR>:vert term<CR>
+nnoremap <leader>ht :cd %:p:h<CR>:term<CR>
 
 " File-type
 filetype on
@@ -70,6 +81,7 @@ filetype plugin on
 filetype indent on
 
 silent execute '!mkdir -p ~/.vim/backup'
+set autoread  " autoread external changes. use `:e!` to force re-read
 set backupdir=~/.vim/backup/
 set backupskip=/tmp/*,/private/tmp/*
 " helptags ~/.vim/doc
@@ -101,7 +113,7 @@ set pastetoggle=<F11>
 set scrolloff=3        " Keep 3 lines above and below the cursor
 set shiftwidth=2
 set shortmess=aI       " Avoid 'Hit enter to continue' message, no intro msg
-set showbreak=➦        " Show character at beginning of wrapped line
+set showbreak=…\  " comment to keep space after continuation
 set showcmd            " Show uncompleted command
 set showmatch          " Show the matching closing bracket
 set showmode           " Show current edit mode
@@ -123,28 +135,21 @@ set viminfo='10,\"100,:50,%,n~/.viminfo
 set visualbell         " Better than a beep
 set nowrap             " Don't wrap long lines
 set whichwrap=<,>,h,l,~,[,]   " Left/right motion line wrap
-set wildmenu
 " have command-line completion <Tab> (for filenames, help topics, option names)
 " first list the available options and complete the longest common part, then
 " have further <Tab>s cycle through the possibilities:
-set wildmode=list:longest,full
-set wildchar=<TAB>     " the char used for "expansion" on the command line
-
-" normally don't automatically format `text' as it is typed, IE only do this
-" with comments, at 79 characters:
+set wildmenu wildignorecase wildmode=list:full wildcharm=<C-Z>
 set formatoptions-=t
-set textwidth=79
+set textwidth=80
 set mouse=a
-
-" With a map leader it's possible to do extra key combinations
-" like <leader>w saves the current file
-let mapleader = ","
-let g:mapleader = ","
+set clipboard^=unnamed,unnamedplus
 
 " statusbar
 let g:airline_theme='distinguished'
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tmuxline#enabled = 0
+
+nnoremap <leader><CR> :nohl<CR>
 
 " Toggle relative line numbers
 augroup numbertoggle
@@ -177,34 +182,24 @@ command -nargs=+ MapToggle call MapToggle(<f-args>)
 MapToggle <F3> list
 MapToggle <F5> wrap
 
-" Fast editing of the .vimrc
+" Fast editing of the .vimrc {{{
 map <leader>e :tabedit! ~/.vimrc<cr>
 " When vimrc is edited, reload it
 autocmd! bufwritepost ~/.vimrc source ~/.vimrc
-
+autocmd! bufwritepost ~/.vim/vimrc source ~/.vim/vimrc
 " Fast editing of the colorscheme
 silent execute "map <leader>co :tabedit! ~/.vim/colors/".myColorscheme.".vim<cr>"
 " When colorscheme is edited, reload it
 autocmd! bufwritepost ~/.vim/colors/*.vim execute "colorscheme ".myColorscheme
-
-" Fast editing of the .zshrc
-map <leader>z :tabedit! ~/.zshrc<cr>
+" }}}
 
 " Fast saving
 nmap <M-s> :w!<cr>
+nmap <leader>w :w!<cr>
+command! W execute 'w !sudo tee % > /dev/null' <bar> edit!
 
-" Make ;w work http://nvie.com/posts/how-i-boosted-my-vim/
 nnoremap ; :
 
-" Saving shortcuts
-nmap <F2> :w<C-M>
-nmap <F10> :qall<C-M>
-
-" Use system-wide clipboard
-set clipboard^=unnamed,unnamedplus
-
-" Copy to clipboard
-map <leader>c :!xclip -f -sel clip<cr>
 
 " Session management
 " Maybe checkout http://peterodding.com/code/vim/session/
@@ -218,13 +213,26 @@ au BufWritePost,BufLeave,WinLeave quickfix au!
 au BufWinEnter ?* silent loadview
 au BufWinEnter quickfix au!
 
-" Delete trailing whitespace
-nmap <leader>wd :%s/\s\+$//<cr>
-vmap <leader>wd :s/\s\+$//<cr>
+fun! TrimTrailing() " {{{
+  " https://stackoverflow.com/questions/35390415/cursor-jump-in-vim-after-save
+  let [_, l, c, _] = getpos('.') | %s/\s\+$//e | call cursor(l, c)
+endfun " }}}
 
-" Use Q for formatting the current paragraph (or selection)
-vmap Q gq
-nmap Q gqap
+augroup vimrcEx "{{{
+  autocmd!
+  " When editing a file, always jump to the last known cursor position.
+  " Don't do it for commit messages, when the position is invalid, or when
+  " inside an event handler (happens when dropping a file on gvim).
+  autocmd BufReadPost *
+    \ if &ft != 'gitcommit' && line("'\"") > 0 && line("'\"") <= line("$") |
+    \   exe "normal g`\"" |
+    \ endif
+  autocmd FileType markdown,md,c,cpp,java,php,perl,python,html,htmldjango,mason,tt2html,css,javascript
+        \ au BufWritePre * :call TrimTrailing()
+  " or put in ftdetect/org.vim
+  autocmd BufRead,BufNewFile *.org setfiletype org
+  autocmd BufRead,BufNewFile *.ts setfiletype javascript
+augroup END "}}}
 
 " Easy window navigation
 map <C-h> <C-w>h
@@ -234,16 +242,6 @@ map <C-l> <C-w>l
 
 " Remap VIM 0 to first non-blank character
 map 0 ^
-
-" Move a line of text using ALT+[jk] or Command+[jk] on mac
-nmap <M-k> mz:m-2<cr>`z
-nmap <M-j> mz:m+<cr>`z
-vmap <M-j> :m'>+<cr>`<my`>mzgv`yo`z
-vmap <M-k> :m'<-2<cr>`>my`<mzgv`yo`z
-
-" Create new windows horizontal (-) and vertical (/)
-map <leader>- <C-W>n
-map <leader>/ :vne<cr>
 
 " Resize splits evenly automatically
 autocmd VimResized * wincmd =
@@ -280,44 +278,16 @@ if &t_Co > 2 || has("gui_running")
 	map <C-\> :nohlsearch<cr>
 endif
 
-" Only do this part when compiled with support for autocommands.
-" if has("autocmd")
-" 	" When editing a file, always jump to the last cursor position.
-" 	" http://vim.wikia.com/wiki/Restore_cursor_to_file_position_in_previous_editing_session
-" 	function! ResCur()
-" 		if line("'\"") <= line("$")
-" 			normal! g`"
-" 			return 1
-" 		endif
-" 	endfunction
-" 	augroup resCur
-" 		autocmd!
-" 		autocmd BufWinEnter * call ResCur()
-" 	augroup END
-" endif " has("autocmd")
-
 " open and close folds
 " Toggle fold state between closed and opened.
-"
-" If there is no fold at current line, just moves forward.
-" If it is present, reverse its state.
-fun! ToggleFold()
-	if foldlevel('.') == 0
-		normal! l
-	else
-		if foldclosed('.') < 0
-			. foldclose
-		else
-			. foldopen
-		endif
-	endif
-	" Clear status line
-	echo
-endfun
+" Space will open/close folds if they exist
+nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
 
-" Map this function to Space key.
-nnoremap <space> :call ToggleFold()<cr>
-vnoremap <space> :call ToggleFold()<cr>
+" In visual mode, create folds; otherwise, open/close
+nnoremap r za
+onoremap r <C-C>za
+vnoremap r zf
+vnoremap <Space> zf
 
 " have the usual indentation keystrokes still work in visual mode:
 vmap <Tab> <C-T>
@@ -361,3 +331,7 @@ noremap <leader>cty :CommandTFlush<cr>
 
 " TComment
 noremap <leader>cc :TComment<cr>
+
+" Ensure vimrc has marker as foldmethod
+setlocal foldmethod=marker
+
