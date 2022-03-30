@@ -63,6 +63,8 @@ cargo install fd-find
 # cargo install du-dust?
 # cargo install gitui?
 
+GH=https://raw.githubusercontent.com
+
 # nnn with plugins ?
 # sudo apt-get install nnn
 # curl -Ls https://raw.githubusercontent.com/jarun/nnn/master/plugins/getplugs | sh
@@ -71,9 +73,12 @@ cargo install fd-find
 # pdftotext
 sudo apt-get install poppler-utils
 
-# oh-my-fish
-# curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install | \
-#   argv='--noninteractive' fish
+# oh-my-fish / omf
+# curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install \
+#   | argv='--noninteractive' fish
+# vs. fisher
+curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher
+fisher install wfxr/forgit
 
 # docker on ARM
 # https://www.docker.com/blog/getting-started-with-docker-for-arm-on-linux/
@@ -111,7 +116,6 @@ mkdir -p $CURDIR/tmux/plugins
 
 
 # node
-#GH=https://raw.githubusercontent.com
 #waituser "Installing NVM"
 #curl -o- $GH/nvm-sh/nvm/v0.39.1/install.sh | bash
 
