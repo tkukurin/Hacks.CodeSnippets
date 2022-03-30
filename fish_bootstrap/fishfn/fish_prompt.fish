@@ -16,7 +16,7 @@ function fish_prompt
     set cwd (prompt_pwd)
   end
 
-  set -l fish     "⋊>"
+  set -l fish     "λ" #"⋊>"
   set -l ahead    "↑"
   set -l behind   "↓"
   set -l diverged "↨"
