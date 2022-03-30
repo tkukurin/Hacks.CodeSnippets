@@ -39,6 +39,8 @@ Plug 'rstacruz/sparkup'
 Plug 'tomtom/tcomment_vim'
 Plug 'tpope/vim-eunuch'
 
+Plug 'morhetz/gruvbox'
+
 call plug#end()  " }}}
 
 
@@ -161,7 +163,7 @@ augroup END
 " Set up pretty colors
 syntax enable
 set background=dark
-let myColorscheme = 'typofree'
+let myColorscheme = 'gruvbox'
 
 if &term ==? 'xterm-256color' || &term ==? 'screen-256color-bce' || &term ==? 'screen-256color'
 	set t_Co=256
