@@ -26,27 +26,9 @@ sudo apt-get install \
   git \
   tmux \
   fish \
-  python3-pip
-
-# pyenv requirements to build Python
-sudo apt-get install --no-install-recommends \
-  make \
-  build-essential \
-  libssl-dev \
-  zlib1g-dev \
-  libbz2-dev \
-  libreadline-dev \
-  libsqlite3-dev \
-  wget \
-  curl \
-  llvm \
-  libncurses5-dev \
-  xz-utils \
-  tk-dev \
-  libxml2-dev \
-  libxmlsec1-dev \
-  libffi-dev \
-  liblzma-dev
+  python3-pip \
+  nginx \
+  fail2ban
 
 sudo snap install go --classic  # can't just untar go due to ARM
 
@@ -105,9 +87,35 @@ source $CURDIR/.aliasrc
 EOF
 
 # pyenv
-# omf install pyenv
-git clone https://github.com/pyenv/pyenv.git $CURDIR/pyenv
-ln -s $CURDIR/pyenv/ ~/.pyenv
+# sudo apt-get install --no-install-recommends \
+#   make \
+#   build-essential \
+#   libssl-dev \
+#   zlib1g-dev \
+#   libbz2-dev \
+#   libreadline-dev \
+#   libsqlite3-dev \
+#   wget \
+#   curl \
+#   llvm \
+#   libncurses5-dev \
+#   xz-utils \
+#   tk-dev \
+#   libxml2-dev \
+#   libxmlsec1-dev \
+#   libffi-dev \
+#   liblzma-dev
+# git clone https://github.com/pyenv/pyenv.git $CURDIR/pyenv
+# ln -s $CURDIR/pyenv/ ~/.pyenv
+
+
+# conda
+wget https://repo.anaconda.com/miniconda/Miniconda3-py39_4.11.0-Linux-aarch64.sh | bash
+conda config --add channels conda-forge
+conda config --set channel_priority strict
+conda install -c conda-forge jupyter jupyter-lab
+conda install -c nb_conda_kernels
+conda install -n root -c conda-forge conda-smithy
 
 
 # tmux
