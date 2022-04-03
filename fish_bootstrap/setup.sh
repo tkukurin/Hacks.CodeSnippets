@@ -32,15 +32,16 @@ sudo apt-get install \
 
 sudo snap install go --classic  # can't just untar go due to ARM
 
+
 # Just a bunch of Rust impls of things
 cargo install exa
 cargo install bat
 cargo install viu  # view images in terminal
 cargo install fd-find
+cargo install zoxide  # ? z instead of cd
 # cargo install procs?
 # cargo install bartib?
 # cargo install pier?
-# cargo install zoxide? z instead of cd
 # cargo install bottom?
 # cargo install du-dust?
 # cargo install gitui?
@@ -83,7 +84,28 @@ curl -sL $GH/docker-slim/docker-slim/master/scripts/install-dockerslim.sh \
   && rmdir ~/.config/fish/functions \
   && ln -s $CURDIR/fishfn ~/.config/fish/functions
 cat >> ~/.config/fish/config.fish << EOF
+
+# START inserted by install script {{{
 source $CURDIR/.aliasrc
+
+set -Ux forgit_reset_head fgrh
+set -Ux forgit_log fgl
+set -Ux forgit_diff fgd
+set -Ux forgit_ignore fgi
+set -Ux forgit_checkout_file fgcf
+set -Ux forgit_checkout_branch fgcb
+set -Ux forgit_clean fgclean
+set -Ux forgit_stash_show fgss
+set -Ux forgit_cherry_pick fgcp
+set -Ux forgit_rebase fgrb
+set -Ux forgit_fixup fgfu
+set -Ux forgit_checkout_commit fgco
+set -Ux forgit_revert_commit fgrc
+
+zoxide init fish | source
+
+# END inserted by install script }}}
+
 EOF
 
 # pyenv
