@@ -57,6 +57,13 @@ inoremap <expr> <c-x><c-f> fzf#vim#complete#path('rg --files')
 command! -bang -complete=dir -nargs=? LS
     \ call fzf#run(fzf#wrap({'source': 'ls', 'dir': <q-args>}, <bang>0))
 
+command! -bang -nargs=* Rg call fzf#vim#grep(
+      \ "rg --column --line-number --no-heading --color=always --smart-case "
+      \.shellescape(<q-args>),
+      \ 1, 
+      \ fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}), <bang>0
+      \)
+
 " map <leader><leader> :buffers<CR>:b<space>
 nnoremap <leader><leader> :Buffers<CR>
 nnoremap <leader>f :Files<CR>
