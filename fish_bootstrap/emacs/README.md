@@ -4,7 +4,10 @@
 Cloned from [emacs from scratch](https://github.com/daviwil/emacs-from-scratch/tree/master).
 Excellent tutorials, recommended.
 
-<details><summary>README of the old repo</summary>
+<details>
+
+<summary>README of the old repo (org-mode)</summary>
+
 #+title: Emacs From Scratch
 
 This is an example of a fully custom Emacs configuration that you can use as inspiration when building your own!
