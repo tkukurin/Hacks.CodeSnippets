@@ -7,16 +7,13 @@
 # Instead of `chsh`, we source Fish at the end of `.bashrc`.
 # This approach facilitates sharing paths and whatnot.
 
-me="${BASH_SOURCE[0]}"
+set -ueo pipefail
+
+me=$(readlink -f "${BASH_SOURCE[0]}")
 CURDIR=$(cd -- "$(dirname -- "${me}")" &> /dev/null && pwd)
+source "$CURDIR/helpers.sh"
 
-function log() { echo "\e[1m[LOG::${me}]\e[0m"; }
-function waituser() {
-	echo $@ ' (waiting OK) > '
-  read __discard
-}
-
-waituser "Current directory set to $CURDIR"
+ok_or_die "Current directory set to $CURDIR"
 
 sudo apt-get update
 sudo apt-get upgrade
@@ -33,24 +30,32 @@ sudo apt-get install \
   nginx \
   fail2ban \
   default-jre \
-  poppler-utils
+  poppler-utils \
+  # apt-get
 
-sudo snap install go --classic  # can't just untar go due to ARM
-sudo snap install nvim --classic
-sudo snap install emacs --classic
+# can't just untar go due to ARM
+sudo snap install --classic \
+	go \
+	nvim \
+	emacs \
+	# snap
 
 # Just a bunch of Rust impls of things
-cargo install exa
-cargo install bat
-cargo install viu  # view images in terminal
-cargo install fd-find
-cargo install zoxide  # ? z instead of cd
-# cargo install procs?
-# cargo install bartib?
-# cargo install pier?
-# cargo install bottom?
-# cargo install du-dust?
-# cargo install gitui?
+cargo install \
+	exa \
+	bat \
+	viu \
+	fd-find \
+	zoxide \
+	# cargo
+
+# Also consider:
+# procs?
+# bartib?
+# pier?
+# bottom?
+# du-dust?
+# gitui?
 
 GH=https://raw.githubusercontent.com
 
@@ -62,7 +67,7 @@ GH=https://raw.githubusercontent.com
 # oh-my-fish / omf
 # curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install \
 #   | argv='--noninteractive' fish
-# vs. fisher
+# vs. fisher (will just ignore if already installed)
 curl -sL https://git.io/fisher | source
 fisher install jorgebucaran/fisher
 fisher install wfxr/forgit
@@ -70,7 +75,8 @@ fisher install jorgebucaran/nvm.fish
 
 # docker/docker-slim on ARM
 # https://www.docker.com/blog/getting-started-with-docker-for-arm-on-linux/
-curl -fsSL test.docker.com -o get-docker.sh && sh get-docker.sh
+log "Docker setup"
+curl -fsSL test.docker.com -o get-docker.sh && sh get-docker.sh && rm get-docker.sh
 sudo usermod -aG docker $USER
 curl -sL $GH/docker-slim/docker-slim/master/scripts/install-dockerslim.sh \
 	| sudo -E bash -
@@ -136,7 +142,7 @@ EOF
 # ln -s $CURDIR/pyenv/ ~/.pyenv
 
 
-# conda
+log "Installing conda and jupyter kernels"
 wget https://repo.anaconda.com/miniconda/Miniconda3-py39_4.11.0-Linux-aarch64.sh | bash
 conda update conda
 conda init fish
@@ -169,10 +175,13 @@ mkdir -p $CURDIR/tmux/plugins
 
 # omf install nvm  # bindings (note: some SHLVL error)
 
-# vim
+log "Vim setup"
 curl -fLo ./vim/autoload/plug.vim --create-dirs \
   https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 [[ -d ~/.vim ]] || ln -s $CURDIR/vim ~/.vim
+
+log "Running Emacs setup"
+exist ~/.emacs.d || ln -s "$CURDIR/emacs" ~/.emacs.d
 
 export PATH="$HOME/.local/bin:$PATH"
 pip install --user pdm
