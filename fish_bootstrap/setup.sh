@@ -7,12 +7,15 @@
 # Instead of `chsh`, we source Fish at the end of `.bashrc`.
 # This approach facilitates sharing paths and whatnot.
 
+me="${BASH_SOURCE[0]}"
+CURDIR=$(cd -- "$(dirname -- "${me}")" &> /dev/null && pwd)
+
+function log() { echo "\e[1m[LOG::${me}]\e[0m"; }
 function waituser() {
-  echo $@ '> '
+	echo $@ ' (waiting OK) > '
   read __discard
 }
 
-CURDIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 waituser "Current directory set to $CURDIR"
 
 sudo apt-get update
@@ -28,10 +31,13 @@ sudo apt-get install \
   fish \
   python3-pip \
   nginx \
-  fail2ban
+  fail2ban \
+  default-jre \
+  poppler-utils
 
 sudo snap install go --classic  # can't just untar go due to ARM
-
+sudo snap install nvim --classic
+sudo snap install emacs --classic
 
 # Just a bunch of Rust impls of things
 cargo install exa
@@ -53,15 +59,14 @@ GH=https://raw.githubusercontent.com
 # curl -Ls https://raw.githubusercontent.com/jarun/nnn/master/plugins/getplugs | sh
 # curl https://raw.githubusercontent.com/jarun/nnn/master/misc/quitcd/quitcd.fish --output $CURDIR/fishfn/n.fish
 
-# pdftotext
-sudo apt-get install poppler-utils
-
 # oh-my-fish / omf
 # curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install \
 #   | argv='--noninteractive' fish
 # vs. fisher
-curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher
+curl -sL https://git.io/fisher | source
+fisher install jorgebucaran/fisher
 fisher install wfxr/forgit
+fisher install jorgebucaran/nvm.fish
 
 # docker/docker-slim on ARM
 # https://www.docker.com/blog/getting-started-with-docker-for-arm-on-linux/
@@ -133,11 +138,15 @@ EOF
 
 # conda
 wget https://repo.anaconda.com/miniconda/Miniconda3-py39_4.11.0-Linux-aarch64.sh | bash
+conda update conda
+conda init fish
 conda config --add channels conda-forge
 conda config --set channel_priority strict
-conda install -c conda-forge jupyter jupyter-lab
-conda install -c nb_conda_kernels
-conda install -n root -c conda-forge conda-smithy
+conda install -c conda-forge mamba
+mamba install -c conda-forge \
+	jupyter \
+	jupyter-lab \
+	nb_conda_kernels
 
 
 # tmux
@@ -172,7 +181,7 @@ pdm completion fish > ~/.config/fish/completions/pdm.fish
 
 
 if grep -q "START inserted by install script" ~/.bashrc; then
-  echo "Already found .bashrc modification!"
+  log "Already found .bashrc modification!"
 else
   # 'EOF' to prevent expansion
   cat >> ~/.bashrc << 'EOF'
