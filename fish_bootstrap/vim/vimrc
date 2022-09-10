@@ -10,6 +10,8 @@ try | lang en_US | catch | endtry
 let g:plug_shallow = 0  " {{{
 call plug#begin()
 
+Plug 'christoomey/vim-tmux-navigator'
+
 " Sensible defaults
 Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-vinegar'
@@ -32,17 +34,19 @@ Plug 'bronson/vim-trailing-whitespace'
 " File type support
 Plug 'rstacruz/sparkup'
 
-" Colors
-" Plug 'ap/vim-css-color'
-
 " And the rest
 Plug 'tomtom/tcomment_vim'
 Plug 'tpope/vim-eunuch'
+
+Plug 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
 
 Plug 'morhetz/gruvbox'
 
 call plug#end()  " }}}
 
+" If you zoom in Tmux, also zoom after switching window.
+" https://tmuxcheatsheet.com/tmux-plugins-tools/?full_name=christoomey%2Fvim-tmux-navigator
+" let g:tmux_navigator_preserve_zoom = 1
 
 " FZF mappings {{{
 " https://github.com/junegunn/fzf/blob/master/README-VIM.md
@@ -56,6 +60,17 @@ inoremap <expr> <c-x><c-l> fzf#vim#complete(fzf#wrap({
 inoremap <expr> <c-x><c-f> fzf#vim#complete#path('rg --files')
 command! -bang -complete=dir -nargs=? LS
     \ call fzf#run(fzf#wrap({'source': 'ls', 'dir': <q-args>}, <bang>0))
+
+"command! -bang -nargs=* Rg call fzf#vim#grep(
+"      \ "rg --column --line-number --no-heading --color=always --smart-case "
+"      \.shellescape(<q-args>),
+"      \ 1, 
+"      \ fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}), <bang>0
+"      \)
+command! -bang -nargs=* Rg
+  \ call fzf#vim#grep(
+	\   "rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1,
+	\   {'options': '--delimiter : --nth 4..'}, <bang>0)
 
 " map <leader><leader> :buffers<CR>:b<space>
 nnoremap <leader><leader> :Buffers<CR>
@@ -136,6 +151,7 @@ set ttyfast            " We're running on a fast terminal
 set viminfo='10,\"100,:50,%,n~/.viminfo
 set visualbell         " Better than a beep
 set nowrap             " Don't wrap long lines
+set linebreak
 set whichwrap=<,>,h,l,~,[,]   " Left/right motion line wrap
 " have command-line completion <Tab> (for filenames, help topics, option names)
 " first list the available options and complete the longest common part, then
@@ -237,10 +253,10 @@ augroup vimrcEx "{{{
 augroup END "}}}
 
 " Easy window navigation
-map <C-h> <C-w>h
-map <C-j> <C-w>j
-map <C-k> <C-w>k
-map <C-l> <C-w>l
+" map <C-h> <C-w>h
+" map <C-j> <C-w>j
+" map <C-k> <C-w>k
+" map <C-l> <C-w>l
 
 " Remap VIM 0 to first non-blank character
 map 0 ^
