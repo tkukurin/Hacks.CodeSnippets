@@ -13,12 +13,7 @@ me=$(readlink -f "${BASH_SOURCE[0]}")
 CURDIR=$(cd -- "$(dirname -- "${me}")" &> /dev/null && pwd)
 source "$CURDIR/helpers.sh"
 
-ok_or_die "Current directory set to $CURDIR"
-
-sudo apt-get update
-sudo apt-get upgrade
-sudo apt-add-repository ppa:fish-shell/release-3
-sudo apt-get install \
+apt_pkgs="\
   build-essential \
   cargo \
   fzf \
@@ -31,31 +26,39 @@ sudo apt-get install \
   fail2ban \
   default-jre \
   poppler-utils \
-  # apt-get
+"
+log "Installing from apt:\n$apt_pkgs"
+
+sudo apt-add-repository --yes ppa:fish-shell/release-3
+sudo apt update
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install $apt_pkgs
+sudo apt autoremove --yes
 
 # can't just untar go due to ARM
-sudo snap install --classic \
-	go \
-	nvim \
-	emacs \
-	# snap
+sudo snap install --classic go
+sudo snap install --classic nvim
+sudo snap install --classic emacs
 
 # Just a bunch of Rust impls of things
-cargo install \
-	exa \
+rust_plugins="exa \
 	bat \
 	viu \
 	fd-find \
-	zoxide \
-	# cargo
-
-# Also consider:
+	zoxide"
 # procs?
 # bartib?
 # pier?
 # bottom?
 # du-dust?
 # gitui?
+
+for p in $rust_plugins; do
+	# some pkgs fail because rustc versioning
+	cargo install "$p" || logw "Failed installing $p\n"
+done
+
 
 GH=https://raw.githubusercontent.com
 
@@ -68,10 +71,10 @@ GH=https://raw.githubusercontent.com
 # curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install \
 #   | argv='--noninteractive' fish
 # vs. fisher (will just ignore if already installed)
-curl -sL https://git.io/fisher | source
-fisher install jorgebucaran/fisher
-fisher install wfxr/forgit
-fisher install jorgebucaran/nvm.fish
+source /dev/stdin <<< "$(curl https://git.io/fisher)"
+fish -c "fisher install jorgebucaran/fisher"
+fish -c "fisher install wfxr/forgit"
+fish -c "fisher install jorgebucaran/nvm.fish"
 
 # docker/docker-slim on ARM
 # https://www.docker.com/blog/getting-started-with-docker-for-arm-on-linux/
@@ -91,11 +94,20 @@ curl -sL $GH/docker-slim/docker-slim/master/scripts/install-dockerslim.sh \
 # Ctrl-o	Alt-o	Open a file/dir using default editor ($EDITOR)
 # Ctrl-g	Alt-Shift-o	Open a file/dir using xdg-open or open command
 
-[[ -d ~/.config/fish/functions ]] \
-  && rmdir ~/.config/fish/functions \
-  && ln -s $CURDIR/fishfn ~/.config/fish/functions
-cat >> ~/.config/fish/config.fish << EOF
+log "Symlinking fish functions"
+fishcfg=~/.config/fish/config.fish
+fishfns=~/.config/fish/functions
 
+[[ -d "$fishfns" ]] \
+  && rmdir "$fishfns" \
+	&& ln -s "$CURDIR/fishfn/" "$fishfns"
+
+touch $fishcfg
+if grep -q "START inserted by install script" "$fishcfg"; then
+  log "Already found $fishcfg modification!"
+else
+	log "Appending some values to $fishcfg"
+	cat >> "$fishcfg" << EOF
 # START inserted by install script {{{
 source $CURDIR/.aliasrc
 
@@ -116,8 +128,8 @@ set -Ux forgit_revert_commit fgrc
 zoxide init fish | source
 
 # END inserted by install script }}}
-
 EOF
+fi
 
 # pyenv
 # sudo apt-get install --no-install-recommends \
@@ -142,51 +154,63 @@ EOF
 # ln -s $CURDIR/pyenv/ ~/.pyenv
 
 
-log "Installing conda and jupyter kernels"
-wget https://repo.anaconda.com/miniconda/Miniconda3-py39_4.11.0-Linux-aarch64.sh | bash
-conda update conda
+condav=4.11.0
+condaarch=Linux-aarch64
+log "Installing conda ${condav} (${condaarch})"
+
+wget https://repo.anaconda.com/miniconda/Miniconda3-py39_${condav}-${condaarch}.sh | bash
+condabin=$HOME/miniconda3/bin
+[[ -d "$condabin" ]] \
+	|| die "Expected conda bin not found: $condabin"
+log "Adding conda bin $condabin to path"
+export PATH="$condabin:$PATH"
+conda update -n base -y conda
 conda init fish
+conda init bash
 conda config --add channels conda-forge
-conda config --set channel_priority strict
-conda install -c conda-forge mamba
-mamba install -c conda-forge \
+log "Installing mamba"
+conda install -y conda-libmamba-solver
+conda install -y -c conda-forge mamba
+additional_install="\
 	jupyter \
-	jupyter-lab \
-	nb_conda_kernels
+	jupyterlab \
+	nb_conda_kernels \
+	pdm\
+"
+log "Installing via mamba:\n$additional_install"
+mamba install -y -c conda-forge $additional_install
 
 
-# tmux
+log "PDM setup"
+pdm --pep582 >> ~/.bashrc
+pdm completion fish > ~/.config/fish/completions/pdm.fish
+
+
+log "tmux setup"
 mkdir -p $CURDIR/tmux/plugins
 [[ -d ~/.tmux ]] || ln -s $CURDIR/tmux ~/.tmux
 [[ -f ~/.tmux.conf ]] || ln -s $CURDIR/.tmux.conf ~/.tmux.conf
 [[ -d ~/.tmux/plugins/tpm ]] || git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 
-# node
-#waituser "Installing NVM"
-#curl -o- $GH/nvm-sh/nvm/v0.39.1/install.sh | bash
-
+log "NVM setup"
 [[ ! -d ~/.nvm ]] && export NVM_DIR="$HOME/.nvm" && (
   git clone https://github.com/nvm-sh/nvm.git "$CURDIR/nvm"
   ln -s "$CURDIR/nvm" "$NVM_DIR"
   cd "$NVM_DIR"
   git checkout `git describe --abbrev=0 --tags --match "v[0-9]*" $(git rev-list --tags --max-count=1)`
 ) && . "$NVM_DIR/nvm.sh"
-
 # omf install nvm  # bindings (note: some SHLVL error)
+
 
 log "Vim setup"
 curl -fLo ./vim/autoload/plug.vim --create-dirs \
   https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 [[ -d ~/.vim ]] || ln -s $CURDIR/vim ~/.vim
 
-log "Running Emacs setup"
-exist ~/.emacs.d || ln -s "$CURDIR/emacs" ~/.emacs.d
 
-export PATH="$HOME/.local/bin:$PATH"
-pip install --user pdm
-pdm --pep582 >> ~/.bashrc
-pdm completion fish > ~/.config/fish/completions/pdm.fish
+log "Emacs setup"
+[[ -d ~/.emacs.d ]] || ln -s "$CURDIR/emacs" ~/.emacs.d
 
 
 if grep -q "START inserted by install script" ~/.bashrc; then
