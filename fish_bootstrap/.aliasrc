@@ -1,5 +1,8 @@
 
-alias ls=exa
+alias t=tmux
+alias tls='tmux ls'
+
+alias ls='exa -al'
 alias cat=bat
 alias v=vim
 
@@ -12,5 +15,7 @@ alias gs='git status'
 alias gc='git commit'
 alias gp='git push'
 alias gpom='git push origin master'
+
+
 
 # vim: syntax=bash
