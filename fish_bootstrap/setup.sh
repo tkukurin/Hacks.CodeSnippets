@@ -59,16 +59,10 @@ for p in $rust_plugins; do
 	cargo install "$p" || logw "Failed installing $p\n"
 done
 
-
 GH=https://raw.githubusercontent.com
 
-# nnn with plugins ?
-# sudo apt-get install nnn
-# curl -Ls https://raw.githubusercontent.com/jarun/nnn/master/plugins/getplugs | sh
-# curl https://raw.githubusercontent.com/jarun/nnn/master/misc/quitcd/quitcd.fish --output $CURDIR/fishfn/n.fish
-
 # oh-my-fish / omf
-# curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install \
+# curl $GH/oh-my-fish/oh-my-fish/master/bin/install \
 #   | argv='--noninteractive' fish
 # vs. fisher (will just ignore if already installed)
 source /dev/stdin <<< "$(curl https://git.io/fisher)"
@@ -130,29 +124,6 @@ zoxide init fish | source
 # END inserted by install script }}}
 EOF
 fi
-
-# pyenv
-# sudo apt-get install --no-install-recommends \
-#   make \
-#   build-essential \
-#   libssl-dev \
-#   zlib1g-dev \
-#   libbz2-dev \
-#   libreadline-dev \
-#   libsqlite3-dev \
-#   wget \
-#   curl \
-#   llvm \
-#   libncurses5-dev \
-#   xz-utils \
-#   tk-dev \
-#   libxml2-dev \
-#   libxmlsec1-dev \
-#   libffi-dev \
-#   liblzma-dev
-# git clone https://github.com/pyenv/pyenv.git $CURDIR/pyenv
-# ln -s $CURDIR/pyenv/ ~/.pyenv
-
 
 condav=4.11.0
 condaarch=Linux-aarch64
