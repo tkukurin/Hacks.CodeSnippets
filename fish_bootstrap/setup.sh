@@ -140,6 +140,8 @@ conda init fish
 conda init bash
 conda config --add channels conda-forge
 log "Installing mamba"
+# https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-channels.html#strict-channel-priority
+# conda config --set channel_priority false
 conda install -y conda-libmamba-solver
 conda install -y -c conda-forge mamba
 additional_install="\
