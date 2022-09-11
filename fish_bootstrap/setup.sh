@@ -43,10 +43,10 @@ sudo snap install --classic emacs
 
 # Just a bunch of Rust impls of things
 rust_plugins="exa \
-	bat \
-	viu \
-	fd-find \
-	zoxide"
+  bat \
+  viu \
+  fd-find \
+  zoxide"
 # procs?
 # bartib?
 # pier?
@@ -55,8 +55,8 @@ rust_plugins="exa \
 # gitui?
 
 for p in $rust_plugins; do
-	# some pkgs fail because rustc versioning
-	cargo install "$p" || logw "Failed installing $p\n"
+  # some pkgs fail because rustc versioning
+  cargo install "$p" || logw "Failed installing $p\n"
 done
 
 GH=https://raw.githubusercontent.com
@@ -76,17 +76,17 @@ log "Docker setup"
 curl -fsSL test.docker.com -o get-docker.sh && sh get-docker.sh && rm get-docker.sh
 sudo usermod -aG docker $USER
 curl -sL $GH/docker-slim/docker-slim/master/scripts/install-dockerslim.sh \
-	| sudo -E bash -
+  | sudo -E bash -
 # need to logout and back in
 
 # see some packages https://github.com/oh-my-fish/packages-main/tree/master/packages
 # omf install fzf ?
-# Ctrl-t	Ctrl-o	Find a file.
-# Ctrl-r	Ctrl-r	Search through command history.
-# Alt-c	Alt-c	cd into sub-directories (recursively searched).
-# Alt-Shift-c	Alt-Shift-c	cd into sub-directories, including hidden ones.
-# Ctrl-o	Alt-o	Open a file/dir using default editor ($EDITOR)
-# Ctrl-g	Alt-Shift-o	Open a file/dir using xdg-open or open command
+# Ctrl-t  Ctrl-o  Find a file.
+# Ctrl-r  Ctrl-r  Search through command history.
+# Alt-c  Alt-c  cd into sub-directories (recursively searched).
+# Alt-Shift-c  Alt-Shift-c  cd into sub-directories, including hidden ones.
+# Ctrl-o  Alt-o  Open a file/dir using default editor ($EDITOR)
+# Ctrl-g  Alt-Shift-o  Open a file/dir using xdg-open or open command
 
 log "Symlinking fish functions"
 fishcfg=~/.config/fish/config.fish
@@ -94,14 +94,14 @@ fishfns=~/.config/fish/functions
 
 [[ -d "$fishfns" ]] \
   && rmdir "$fishfns" \
-	&& ln -s "$CURDIR/fishfn/" "$fishfns"
+  && ln -s "$CURDIR/fishfn/" "$fishfns"
 
 touch $fishcfg
 if grep -q "START inserted by install script" "$fishcfg"; then
   log "Already found $fishcfg modification!"
 else
-	log "Appending some values to $fishcfg"
-	cat >> "$fishcfg" << EOF
+  log "Appending some values to $fishcfg"
+  cat >> "$fishcfg" << EOF
 # START inserted by install script {{{
 source $CURDIR/.aliasrc
 
@@ -132,7 +132,7 @@ log "Installing conda ${condav} (${condaarch})"
 wget https://repo.anaconda.com/miniconda/Miniconda3-py39_${condav}-${condaarch}.sh | bash
 condabin=$HOME/miniconda3/bin
 [[ -d "$condabin" ]] \
-	|| die "Expected conda bin not found: $condabin"
+  || die "Expected conda bin not found: $condabin"
 log "Adding conda bin $condabin to path"
 export PATH="$condabin:$PATH"
 conda update -n base -y conda
@@ -145,10 +145,10 @@ log "Installing mamba"
 conda install -y conda-libmamba-solver
 conda install -y -c conda-forge mamba
 additional_install="\
-	jupyter \
-	jupyterlab \
-	nb_conda_kernels \
-	pdm\
+  jupyter \
+  jupyterlab \
+  nb_conda_kernels \
+  pdm\
 "
 log "Installing via mamba:\n$additional_install"
 mamba install -y -c conda-forge $additional_install

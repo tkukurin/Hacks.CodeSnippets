@@ -12,7 +12,7 @@ function loge() { echo -e "\e[1m\e[34m[ERR::${me}]\e[0m\n$@"; }
 function die() { loge "$@"; exit 1; }
 
 function user_ok() {
-	log "$@"
+  log "$@"
   read -p "Continue ([y]es or [N]o) > "
   case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
     y|yes) return 0 ;;
@@ -21,9 +21,9 @@ function user_ok() {
 }
 
 function ok_or_die() {
-	if ! user_ok "$@"; then
-		log "Exiting due to non-confirm from user"
-		exit 1
-	fi
+  if ! user_ok "$@"; then
+    log "Exiting due to non-confirm from user"
+    exit 1
+  fi
 }
 
