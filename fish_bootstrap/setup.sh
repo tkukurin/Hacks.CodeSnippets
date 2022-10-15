@@ -190,6 +190,7 @@ log "NVM setup"
   git checkout `git describe --abbrev=0 --tags --match "v[0-9]*" $(git rev-list --tags --max-count=1)`
 ) && . "$NVM_DIR/nvm.sh"
 # omf install nvm  # bindings (note: some SHLVL error)
+nvm install latest || logw "nvm latest install failed"
 
 
 log "Vim setup"
@@ -205,6 +206,10 @@ curl -fLo ./vim/autoload/plug.vim --create-dirs \
 
 log "Emacs setup"
 [[ -d ~/.emacs.d ]] || ln -s "$CURDIR/emacs" ~/.emacs.d
+# LSPs in the emacs org config
+npm install -g typescript-language-server typescript
+# NOTE: python-language-server is unmaintained
+mamba install python-lsp-server python-lsp-server-base
 
 
 if grep -q "START inserted by install script" ~/.bashrc; then
@@ -237,6 +242,7 @@ export PATH="$HOME/.local/bin:$PATH"
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+export nvm_default_version='latest'
 
 export EDITOR=vim
 [[ $(which bat) ]] && export PAGER=bat || export PAGER=less
