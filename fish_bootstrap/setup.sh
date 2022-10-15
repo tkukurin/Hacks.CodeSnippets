@@ -39,6 +39,8 @@ sudo apt autoremove --yes
 
 # can't just untar go due to ARM
 sudo snap install --classic go
+# Potential problem on ARM?
+# https://github.com/NixOS/nixpkgs/issues/128959
 sudo snap install --classic nvim
 sudo snap install --classic emacs
 
@@ -126,6 +128,7 @@ set -Ux forgit_revert_commit fgrc
 
 zoxide init fish | source || echo "WARN: zoxide plugin fail?"
 fish_ssh_agent || echo "WARN: fish_ssh_agent missing?"
+fish_vi_key_bindings
 
 # END inserted by install script }}}
 EOF
@@ -193,6 +196,11 @@ log "Vim setup"
 curl -fLo ./vim/autoload/plug.vim --create-dirs \
   https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 [[ -d ~/.vim ]] || ln -s $CURDIR/vim ~/.vim
+
+# TODO?
+# log "nvim setup" 
+# [[ -d ~/.config/nvim ]] || git clone https://github.com/NvChad/NvChad ~/.config/nvim --depth 1
+# https://nvchad.com/config/Walkthrough
 
 
 log "Emacs setup"
