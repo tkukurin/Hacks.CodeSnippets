@@ -4,18 +4,23 @@ alias tls='tmux ls'
 
 alias ls='exa -al'
 alias cat=bat
-alias v=vim
+alias v=nvim
 
-alias vrc='vim ~/.vim/vimrc'
-alias vfish='vim ~/.config/fish/config.fish'
-alias vbash='vim ~/.bashrc'
+alias vrc='nvim ~/.vim/vimrc'
+alias vfish='nvim ~/.config/fish/config.fish'
+alias vbash='nvim ~/.bashrc'
 
 alias ga='git add'
 alias gs='git status'
+alias gb='git branch'
+alias gco='git checkout'
+alias gds='git diff --staged'
+alias gd='git diff'
 alias gc='git commit'
-alias gp='git push'
+alias gp='git pull'
+alias gu='git push'
 alias gpom='git push origin master'
 
-
+alias ipy='ipython --no-banner --TerminalInteractiveShell.editing_mode=vi --InteractiveShellApp.extensions autoreload --InteractiveShellApp.exec_lines "%autoreload 2"'
 
 # vim: syntax=bash
