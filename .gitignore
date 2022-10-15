@@ -9,4 +9,4 @@ fish_bootstrap/vim/view
 fish_bootstrap/vim/backup
 fish_bootstrap/vim/.*
 fish_bootstrap/fishfn/fisher.fish
-
+**/emacs/**/eln-cache/**/*

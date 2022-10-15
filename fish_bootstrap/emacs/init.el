@@ -23,16 +23,16 @@
 ;; Initialize package sources
 (require 'package)
 
-; Melpa stuck?
-; https://github.com/syl20bnr/spacemacs/issues/4453
+;; In case Melpa is stuck, use alternate URLs.
+;; https://github.com/syl20bnr/spacemacs/issues/4453
 (setq package-archives
-      '(("melpa" . "https://raw.githubusercontent.com/d12frosted/elpa-mirror/master/melpa/")
-        ("org"   . "https://raw.githubusercontent.com/d12frosted/elpa-mirror/master/org/")
-        ("gnu"   . "https://raw.githubusercontent.com/d12frosted/elpa-mirror/master/gnu/")))
+    '(("melpa" . "https://raw.githubusercontent.com/d12frosted/elpa-mirror/master/melpa/")
+      ("org"   . "https://raw.githubusercontent.com/d12frosted/elpa-mirror/master/org/")
+      ("gnu"   . "https://raw.githubusercontent.com/d12frosted/elpa-mirror/master/gnu/")))
 
-; (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-;                          ("org" . "https://orgmode.org/elpa/")
-;                          ("elpa" . "https://elpa.gnu.org/packages/")))
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                         ("org" . "https://orgmode.org/elpa/")
+                         ("elpa" . "https://elpa.gnu.org/packages/")))
 
 (package-initialize)
 (unless package-archive-contents
@@ -66,6 +66,12 @@
       `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
 
 (setq inhibit-startup-message t)
+
+;; scroll one line at a time (less jumpy)
+;; native as of emacs 29
+;; https://www.emacswiki.org/emacs/SmoothScrolling
+(pixel-scroll-mode)
+(setq scroll-step 2)
 
 (scroll-bar-mode -1)        ; Disable visible scrollbar
 (tool-bar-mode -1)          ; Disable the toolbar
@@ -141,11 +147,12 @@
   :config
   (evil-collection-init))
 
-(use-package command-log-mode
-  :commands command-log-mode)
+;; NOTE(tk): displays keybindings in a side panel (for screencasts, I don't need it)
+;(use-package command-log-mode
+;  :commands command-log-mode)
 
 (use-package doom-themes
-  :init (load-theme 'doom-palenight t))
+  :init (load-theme 'doom-gruvbox t))
 
 (use-package all-the-icons)
 
@@ -271,9 +278,9 @@
   (setq org-log-into-drawer t)
 
   (setq org-agenda-files
-        '("~/Projects/Code/emacs-from-scratch/OrgFiles/Tasks.org"
-          "~/Projects/Code/emacs-from-scratch/OrgFiles/Habits.org"
-          "~/Projects/Code/emacs-from-scratch/OrgFiles/Birthdays.org"))
+        '("~/notes/Tasks.org"
+          "~/notes/Habits.org"
+          "~/notes/Birthdays.org"))
 
   (require 'org-habit)
   (add-to-list 'org-modules 'org-habit)
@@ -354,28 +361,28 @@
 
   (setq org-capture-templates
     `(("t" "Tasks / Projects")
-      ("tt" "Task" entry (file+olp "~/Projects/Code/emacs-from-scratch/OrgFiles/Tasks.org" "Inbox")
+      ("tt" "Task" entry (file+olp "~/notes/Tasks.org" "Inbox")
            "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
 
       ("j" "Journal Entries")
       ("jj" "Journal" entry
-           (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
+           (file+olp+datetree "~/notes/Journal.org")
            "\n* %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
            ;; ,(dw/read-file-as-string "~/Notes/Templates/Daily.org")
            :clock-in :clock-resume
            :empty-lines 1)
       ("jm" "Meeting" entry
-           (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
+           (file+olp+datetree "~/notes/Journal.org")
            "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
            :clock-in :clock-resume
            :empty-lines 1)
 
       ("w" "Workflows")
-      ("we" "Checking Email" entry (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
+      ("we" "Checking Email" entry (file+olp+datetree "~/notes/Journal.org")
            "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
 
       ("m" "Metrics Capture")
-      ("mw" "Weight" table-line (file+headline "~/Projects/Code/emacs-from-scratch/OrgFiles/Metrics.org" "Weight")
+      ("mw" "Weight" table-line (file+headline "~/notes/Metrics.org" "Weight")
        "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)))
 
   (define-key global-map (kbd "C-c j")
@@ -388,13 +395,14 @@
   :custom
   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
-(defun efs/org-mode-visual-fill ()
-  (setq visual-fill-column-width 100
-        visual-fill-column-center-text t)
-  (visual-fill-column-mode 1))
-
-(use-package visual-fill-column
-  :hook (org-mode . efs/org-mode-visual-fill))
+;; Looks nice but I don't need it:
+;; centers org documents
+; (defun efs/org-mode-visual-fill ()
+;   (setq visual-fill-column-width 100
+;         visual-fill-column-center-text t)
+;   (visual-fill-column-mode 1))
+; (use-package visual-fill-column
+;   :hook (org-mode . efs/org-mode-visual-fill))
 
 (with-eval-after-load 'org
   (org-babel-do-load-languages
@@ -617,16 +625,3 @@
 
 ;; Make gc pauses faster by decreasing the threshold.
 (setq gc-cons-threshold (* 2 1000 1000))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(dired-hide-dotfiles dired-open all-the-icons-dired dired-single eshell-git-prompt vterm eterm-256color rainbow-delimiters evil-nerd-commenter forge magit counsel-projectile projectile company-box company pyvenv python-mode typescript-mode dap-mode lsp-ivy lsp-treemacs lsp-ui lsp-mode visual-fill-column org-bullets hydra helpful ivy-prescient counsel ivy-rich ivy which-key doom-modeline all-the-icons doom-themes command-log-mode evil-collection evil general no-littering auto-package-update use-package)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
