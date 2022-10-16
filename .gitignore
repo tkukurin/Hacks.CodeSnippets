@@ -10,3 +10,5 @@ fish_bootstrap/vim/backup
 fish_bootstrap/vim/.*
 fish_bootstrap/fishfn/fisher.fish
 **/emacs/**/eln-cache/**/*
+.last-package-update-day
+**/fishfn_backup
