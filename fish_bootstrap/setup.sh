@@ -173,7 +173,8 @@ if ! which conda; then
     jupyter \
     jupyterlab \
     nb_conda_kernels \
-    pdm\
+    pdm \
+    cookiecutter \
   "
   log "Installing via mamba:\n$additional_install"
   mamba install -y -c conda-forge $additional_install
@@ -217,12 +218,14 @@ log "nvim setup"
 
 
 log "Emacs setup"
+# cf. https://wikemacs.org/wiki/Emacs_server
+# if you want to setup systemd.
+# otherwise https://stackoverflow.com/questions/5570451/how-to-start-emacs-server-only-if-it-is-not-started
 [[ -d ~/.emacs.d ]] || ln -s "$CURDIR/emacs" ~/.emacs.d
 # LSPs in the emacs org config
 npm install -g typescript-language-server typescript
 # NOTE: python-language-server is unmaintained
 mamba install python-lsp-server python-lsp-server-base
-
 
 if grep -q "START inserted by install script" ~/.bashrc; then
   log "Already found .bashrc modification!"

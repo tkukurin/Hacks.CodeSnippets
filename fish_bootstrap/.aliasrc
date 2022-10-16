@@ -5,6 +5,10 @@ alias tls='tmux ls'
 alias ls='exa -al'
 alias cat=bat
 alias v=nvim
+# Apparently start-server is deprecated for a while now
+# https://stackoverflow.com/questions/5570451/how-to-start-emacs-server-only-if-it-is-not-started
+export ALTERNATE_EDITOR=""
+alias e='emacsclient --tty'
 
 alias vrc='nvim ~/.vim/vimrc'
 alias vfish='nvim ~/.config/fish/config.fish'
