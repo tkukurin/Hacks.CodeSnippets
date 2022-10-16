@@ -26,6 +26,9 @@ apt_pkgs="\
   fail2ban \
   default-jre \
   poppler-utils \
+  # `vterm` for emacs
+  cmake \
+  libtool-bin \
 "
 log "Installing from apt:\n$apt_pkgs"
 
@@ -43,6 +46,14 @@ sudo snap install --classic go
 # https://github.com/NixOS/nixpkgs/issues/128959
 sudo snap install --classic nvim
 sudo snap install --classic emacs
+
+# find latest version on https://www.brow.sh/downloads/
+# Used to work, now maybe doesn't...
+# browsh_url="https://github.com/browsh-org/browsh/releases/download/v1.8.0/browsh_1.8.0_linux_arm64.deb"
+# sudo apt-get install firefox && \
+# wget "$browsh_url" -O browsh.deb && \
+# sudo apt install ./browsh.deb && \
+# rm ./browsh.deb
 
 # Just a bunch of Rust impls of things
 rust_plugins="exa \
@@ -167,13 +178,13 @@ if ! which conda; then
   log "Installing via mamba:\n$additional_install"
   mamba install -y -c conda-forge $additional_install
 else
-  "Skip conda install"
+  log "Skip conda install"
 fi
 
 log "PDM setup"
-pdm --pep582 >> ~/.bashrc
-pdm completion fish > ~/.config/fish/completions/pdm.fish
-
+grep -q "pep582" ~/.bashrc \
+  || (pdm --pep582 >> ~/.bashrc)
+pdm completion fish > "$HOME/.config/fish/completions/pdm.fish"
 
 log "tmux setup"
 mkdir -p $CURDIR/tmux/plugins
@@ -191,7 +202,7 @@ log "NVM setup"
 ) && . "$NVM_DIR/nvm.sh"
 # omf install nvm  # bindings (note: some SHLVL error)
 nvm install latest || logw "nvm latest install failed"
-
+export nvm_default_version='latest'
 
 log "Vim setup"
 curl -fLo ./vim/autoload/plug.vim --create-dirs \
@@ -199,8 +210,9 @@ curl -fLo ./vim/autoload/plug.vim --create-dirs \
 [[ -d ~/.vim ]] || ln -s $CURDIR/vim ~/.vim
 
 # TODO?
-# log "nvim setup" 
-# [[ -d ~/.config/nvim ]] || git clone https://github.com/NvChad/NvChad ~/.config/nvim --depth 1
+log "nvim setup" 
+[[ -d ~/.config/nvim ]] \
+  || git clone https://github.com/NvChad/NvChad ~/.config/nvim --depth 1
 # https://nvchad.com/config/Walkthrough
 
 
