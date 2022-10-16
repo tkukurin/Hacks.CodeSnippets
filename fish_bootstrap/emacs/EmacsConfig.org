@@ -1,9 +1,19 @@
 #+title: Emacs From Scratch Configuration
 #+PROPERTY: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
 
+* Emacs-evil tutorial: [[https://github.com/noctuid/evil-guide][Evil Guide]]
+** Other refs
+- [[https://sachachua.com/blog/2013/05/how-to-learn-emacs-a-hand-drawn-one-pager-for-beginners/][Emacs cheatsheet one-pager]]
+
+** Basic commands
+- Exit: =C-x C-c=
+- Cancel: =C-g=
+- Start emacs lisp mode: =eshell=
+- Open links: =C-c C-o= or =M-x org-open-at-point= to open the link in your web browser.
+- Dired: =C-x C-j= (cf. near end of this config)
+
 * Config from *Emacs From Scratch*. Generates [[file:init.el][init.el]].
 
-Open links: =C-c C-o= or =M-x org-open-at-point= to open the link in your web browser.
 
 #+begin_src emacs-lisp
 
@@ -17,16 +27,7 @@ Open links: =C-c C-o= or =M-x org-open-at-point= to open the link in your web br
   ;; Make frame transparency overridable
   (defvar efs/frame-transparency '(90 . 90))
 
-  ;; Auto update buffers if changed
-  (global-auto-revert-mode)
-
-#+end_src
-
-* Startup Performance
-
-#+begin_src emacs-lisp
-
-  ;; The default is 800 kilobytes.  Measured in bytes.
+  ;; The default is 800 kb. NOTE: lowered back at the end of this config.
   (setq gc-cons-threshold (* 50 1000 1000))
 
   (defun efs/display-startup-time ()
@@ -38,7 +39,11 @@ Open links: =C-c C-o= or =M-x org-open-at-point= to open the link in your web br
 
   (add-hook 'emacs-startup-hook #'efs/display-startup-time)
 
+  ;; Auto update buffers if changed
+  (global-auto-revert-mode)
+
 #+end_src
+
 
 * Package System Setup
 
@@ -124,7 +129,7 @@ This section configures basic UI settings that remove unneeded elements to make 
   ;; native as of emacs 29
   ;; https://www.emacswiki.org/emacs/SmoothScrolling
   (pixel-scroll-mode)
-  (setq scroll-step 2)
+  (setq scroll-step 1)
 
   (scroll-bar-mode -1)        ; Disable visible scrollbar
   (tool-bar-mode -1)          ; Disable the toolbar
@@ -153,21 +158,13 @@ This section configures basic UI settings that remove unneeded elements to make 
                   eshell-mode-hook))
     (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
-#+end_src
+  (set-face-attribute 'default nil :font "Fira Code Retina" :height efs/default-font-size)
 
-** Font Configuration
+  ;; Set the fixed pitch face
+  (set-face-attribute 'fixed-pitch nil :font "Fira Code Retina" :height efs/default-font-size)
 
-I am using the [[https://github.com/tonsky/FiraCode][Fira Code]] and [[https://fonts.google.com/specimen/Cantarell][Cantarell]] fonts for this configuration which will more than likely need to be installed on your machine.  Both can usually be found in the various Linux distro package managers or downloaded from the links above.
-
-#+begin_src emacs-lisp
-
-(set-face-attribute 'default nil :font "Fira Code Retina" :height efs/default-font-size)
-
-;; Set the fixed pitch face
-(set-face-attribute 'fixed-pitch nil :font "Fira Code Retina" :height efs/default-font-size)
-
-;; Set the variable pitch face
-(set-face-attribute 'variable-pitch nil :font "Cantarell" :height efs/default-variable-font-size :weight 'regular)
+  ;; Set the variable pitch face
+  (set-face-attribute 'variable-pitch nil :font "Cantarell" :height efs/default-variable-font-size :weight 'regular)
 
 #+end_src
 
@@ -223,26 +220,21 @@ I am using the [[https://github.com/tonsky/FiraCode][Fira Code]] and [[https://f
 
 * UI Configuration
 
-** Command Log Mode
-
-[[https://github.com/lewang/command-log-mode][command-log-mode]] is useful for displaying a panel showing each key binding you use in a panel on the right side of the frame.  Great for live streams and screencasts!
+** [[https://github.com/lewang/command-log-mode][command-log-mode]] displays keybindings in a side-panel
 
 #+begin_src emacs-lisp
-
-  ;; NOTE(tk): displays keybindings in a side panel (for screencasts, I don't need it)
-  ;(use-package command-log-mode
-  ;  :commands command-log-mode)
-
+  ;(use-package command-log-mode :commands command-log-mode)
 #+end_src
 
 ** Color Theme
 
-[[https://github.com/hlissner/emacs-doom-themes][doom-themes]] is a great set of themes with a lot of variety and support for many different Emacs modes.  Taking a look at the [[https://github.com/hlissner/emacs-doom-themes/tree/screenshots][screenshots]] might help you decide which one you like best.  You can also run =M-x counsel-load-theme= to choose between them easily.
+Run =M-x counsel-load-theme= to choose between them.
 
 #+begin_src emacs-lisp
 
-(use-package doom-themes
-  :init (load-theme 'doom-gruvbox t))
+  ; I hate the green modeline color from doom-gruvbox
+  (use-package doom-themes
+    :init (load-theme 'doom-nord t))
 
 #+end_src
 
@@ -250,7 +242,7 @@ I am using the [[https://github.com/tonsky/FiraCode][Fira Code]] and [[https://f
 
 [[https://github.com/seagle0128/doom-modeline][doom-modeline]] is a very attractive and rich (yet still minimal) mode line configuration for Emacs.  The default configuration is quite good but you can check out the [[https://github.com/seagle0128/doom-modeline#customize][configuration options]] for more things you can enable or disable.
 
-*NOTE:* The first time you load your configuration on a new machine, you'll need to run `M-x all-the-icons-install-fonts` so that mode line icons display correctly.
+*NOTE:* you'll need to first-time run =M-x all-the-icons-install-fonts= so that mode line icons display correctly.
 
 #+begin_src emacs-lisp
 
@@ -262,9 +254,7 @@ I am using the [[https://github.com/tonsky/FiraCode][Fira Code]] and [[https://f
 
 #+end_src
 
-** Which Key
-
-[[https://github.com/justbur/emacs-which-key][which-key]] is a useful UI panel that appears when you start pressing any key binding in Emacs to offer you all possible completions for the prefix.  For example, if you press =C-c= (hold control and press the letter =c=), a panel will appear at the bottom of the frame displaying all of the bindings under that prefix and which command they run.  This is very useful for learning the possible key bindings in the mode of your current buffer.
+** [[https://github.com/justbur/emacs-which-key][which-key]] 
 
 #+begin_src emacs-lisp
 
@@ -279,7 +269,9 @@ I am using the [[https://github.com/tonsky/FiraCode][Fira Code]] and [[https://f
 
 ** Ivy and Counsel
 
-[[https://oremacs.com/swiper/][Ivy]] is an excellent completion framework for Emacs.  It provides a minimal yet powerful selection menu that appears when you open files, switch buffers, and for many other tasks in Emacs.  Counsel is a customized set of commands to replace `find-file` with `counsel-find-file`, etc which provide useful commands for each of the default completion commands.
+[[https://oremacs.com/swiper/][Ivy]] is an excellent completion framework for Emacs.  It provides a minimal yet powerful selection menu that appears when you open files, switch buffers, and for many other tasks in Emacs.
+
+**Counsel** is a customized set of commands to replace `find-file` with `counsel-find-file`, etc which provide useful commands for each of the default completion commands.
 
 [[https://github.com/Yevgnen/ivy-rich][ivy-rich]] adds extra columns to a few of the Counsel commands to provide more information about each item.
 
@@ -332,15 +324,16 @@ This Prescient configuration is optimized for use in System Crafters videos and 
     :custom
     (ivy-prescient-enable-filtering nil)
     :config
-    ;; Uncomment the following line to have sorting remembered across sessions!
-    ;(prescient-persist-mode 1)
+    ;; have sorting remembered across sessions!
+    (prescient-persist-mode 1)
     (ivy-prescient-mode 1))
 
 #+end_src
 
-** Helpful Help Commands
+** Helpful Help Commands (figure out how Emacs works)
 
-[[https://github.com/Wilfred/helpful][Helpful]] adds a lot of very helpful (get it?) information to Emacs' =describe-= command buffers.  For example, if you use =describe-function=, you will not only get the documentation about the function, you will also see the source code of the function and where it gets used in other places in the Emacs configuration.  It is very useful for figuring out how things work in Emacs.
+[[https://github.com/Wilfred/helpful][Helpful]] adds information to Emacs' =describe-= command buffers.
+E.g. =describe-function= not only gets docs, but also the source code and where it gets used in other places in the Emacs configuration.
 
 #+begin_src emacs-lisp
 
@@ -377,9 +370,7 @@ This is an example of using [[https://github.com/abo-abo/hydra][Hydra]] to desig
 
 #+end_src
 
-* Org Mode
-
-[[https://orgmode.org/][Org Mode]] is one of the hallmark features of Emacs.  It is a rich document editor, project planner, task and time tracker, blogging engine, and literate coding utility all wrapped up in one package.
+* [[https://orgmode.org/][Org Mode]] 
 
 ** Better Font Faces
 
@@ -425,14 +416,13 @@ This section contains the basic configuration for =org-mode= plus the configurat
 
 #+begin_src emacs-lisp
 
-  ;; do I need to explicitly set linum-mode ??
-  ;; seems org-mode by default removes line numbers
-
   (defun efs/org-mode-setup ()
     (org-indent-mode)
     (variable-pitch-mode 1)
     (visual-line-mode 1)
-    ; (linum-mode 1)
+    ;; seems org-mode by default removes line numbers
+    ;; this reverts them back
+    (linum-mode 1)
   )
 
   (use-package org
@@ -576,7 +566,7 @@ This section contains the basic configuration for =org-mode= plus the configurat
 
 *** Center Org Buffers
 
-We use [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]] to center =org-mode= buffers for a more pleasing writing experience as it centers the contents of the buffer horizontally to seem more like you are editing a document.  This is really a matter of personal preference so you can remove the block below if you don't like the behavior.
+We use [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]] to center =org-mode= buffers for a more pleasing writing experience as it centers the contents of the buffer horizontally to seem more like you are editing a document.
 
 #+begin_src emacs-lisp
 
@@ -591,7 +581,8 @@ We use [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]
 
 ** Configure Babel Languages
 
-To execute or export code in =org-mode= code blocks, you'll need to set up =org-babel-load-languages= for each language you'd like to use.  [[https://orgmode.org/worg/org-contrib/babel/languages.html][This page]] documents all of the languages that you can use with =org-babel=.
+To execute or export code in =org-mode= code blocks, you'll need to set up =org-babel-load-languages= for each language you'd like to use.
+[[https://orgmode.org/worg/org-contrib/babel/languages.html][This page]] documents all of the languages that you can use with =org-babel=.
 
 #+begin_src emacs-lisp
 
@@ -644,9 +635,9 @@ You can add more =src= block templates below by copying one of the lines and cha
 
 *** IDE Features with lsp-mode
 
-**** lsp-mode
+**** [[https://emacs-lsp.github.io/lsp-mode/][lsp-mode]]
 
-We use the excellent [[https://emacs-lsp.github.io/lsp-mode/][lsp-mode]] to enable IDE-like functionality for many different programming languages via "language servers" that speak the [[https://microsoft.github.io/language-server-protocol/][Language Server Protocol]].  Before trying to set up =lsp-mode= for a particular language, check out the [[https://emacs-lsp.github.io/lsp-mode/page/languages/][documentation for your language]] so that you can learn which language servers are available and how to install them.
+Check out the [[https://emacs-lsp.github.io/lsp-mode/page/languages/][documentation for your language]].
 
 The =lsp-keymap-prefix= setting enables you to define a prefix for where =lsp-mode='s default keybindings will be added.  I *highly recommend* using the prefix to find out what you can do with =lsp-mode= in a buffer.
 
@@ -668,9 +659,10 @@ The =which-key= integration adds helpful descriptions of the various keys so you
 
 #+end_src
 
-**** lsp-ui
+**** [[https://emacs-lsp.github.io/lsp-ui/][lsp-ui]]
 
-[[https://emacs-lsp.github.io/lsp-ui/][lsp-ui]] is a set of UI enhancements built on top of =lsp-mode= which make Emacs feel even more like an IDE.  Check out the screenshots on the =lsp-ui= homepage (linked at the beginning of this paragraph) to see examples of what it can do.
+A set of UI enhancements built on top of =lsp-mode=.
+Check out the screenshots on the =lsp-ui= homepage to see examples of what it can do.
 
 #+begin_src emacs-lisp
 
@@ -845,8 +837,8 @@ We also use [[https://github.com/sebastiencs/company-box][company-box]] to furth
     ("C-c p" . projectile-command-map)
     :init
     ;; NOTE: Set this to the folder where you keep your Git repos!
-    (when (file-directory-p "~/Projects/Code")
-      (setq projectile-project-search-path '("~/Projects/Code")))
+    (when (file-directory-p "~/proj")
+      (setq projectile-project-search-path '("~/proj")))
     (setq projectile-switch-project-action #'projectile-dired))
 
   (use-package counsel-projectile

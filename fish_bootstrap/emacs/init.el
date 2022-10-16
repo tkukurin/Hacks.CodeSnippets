@@ -1,4 +1,4 @@
-;; NOTE: init.el is now generated from Emacs.org.  Please edit that file
+;; NOTE: init.el is now generated from EmacsConfig.org.  Please edit that file
 ;;       in Emacs and init.el will be generated automatically!
 
 ;; You will most likely need to adjust this font size for your system!
@@ -8,7 +8,7 @@
 ;; Make frame transparency overridable
 (defvar efs/frame-transparency '(90 . 90))
 
-;; The default is 800 kilobytes.  Measured in bytes.
+;; The default is 800 kb. NOTE: lowered back at the end of this config.
 (setq gc-cons-threshold (* 50 1000 1000))
 
 (defun efs/display-startup-time ()
@@ -19,6 +19,9 @@
            gcs-done))
 
 (add-hook 'emacs-startup-hook #'efs/display-startup-time)
+
+;; Auto update buffers if changed
+(global-auto-revert-mode)
 
 ;; Initialize package sources
 (require 'package)
@@ -71,7 +74,7 @@
 ;; native as of emacs 29
 ;; https://www.emacswiki.org/emacs/SmoothScrolling
 (pixel-scroll-mode)
-(setq scroll-step 2)
+(setq scroll-step 1)
 
 (scroll-bar-mode -1)        ; Disable visible scrollbar
 (tool-bar-mode -1)          ; Disable the toolbar
@@ -122,7 +125,7 @@
   (efs/leader-keys
     "t"  '(:ignore t :which-key "toggles")
     "tt" '(counsel-load-theme :which-key "choose theme")
-    "fde" '(lambda () (interactive) (find-file (expand-file-name "~/.emacs.d/Emacs.org")))))
+    "fde" '(lambda () (interactive) (find-file (expand-file-name "~/.emacs.d/EmacsConfig.org")))))
 
 (use-package evil
   :init
@@ -147,12 +150,11 @@
   :config
   (evil-collection-init))
 
-;; NOTE(tk): displays keybindings in a side panel (for screencasts, I don't need it)
-;(use-package command-log-mode
-;  :commands command-log-mode)
+;(use-package command-log-mode :commands command-log-mode)
 
+; I hate the green modeline color from doom-gruvbox
 (use-package doom-themes
-  :init (load-theme 'doom-gruvbox t))
+  :init (load-theme 'doom-nord t))
 
 (use-package all-the-icons)
 
@@ -204,8 +206,8 @@
   :custom
   (ivy-prescient-enable-filtering nil)
   :config
-  ;; Uncomment the following line to have sorting remembered across sessions!
-  ;(prescient-persist-mode 1)
+  ;; have sorting remembered across sessions!
+  (prescient-persist-mode 1)
   (ivy-prescient-mode 1))
 
 (use-package helpful
@@ -264,7 +266,11 @@
 (defun efs/org-mode-setup ()
   (org-indent-mode)
   (variable-pitch-mode 1)
-  (visual-line-mode 1))
+  (visual-line-mode 1)
+  ;; seems org-mode by default removes line numbers
+  ;; this reverts them back
+  (linum-mode 1)
+)
 
 (use-package org
   :pin org
@@ -395,14 +401,12 @@
   :custom
   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
-;; Looks nice but I don't need it:
-;; centers org documents
-; (defun efs/org-mode-visual-fill ()
-;   (setq visual-fill-column-width 100
-;         visual-fill-column-center-text t)
-;   (visual-fill-column-mode 1))
-; (use-package visual-fill-column
-;   :hook (org-mode . efs/org-mode-visual-fill))
+(defun efs/org-mode-visual-fill ()
+  (setq visual-fill-column-width 100
+        visual-fill-column-center-text t)
+  (visual-fill-column-mode 1))
+(use-package visual-fill-column
+  :hook (org-mode . efs/org-mode-visual-fill))
 
 (with-eval-after-load 'org
   (org-babel-do-load-languages
@@ -418,15 +422,14 @@
 
   (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-  (add-to-list 'org-structure-template-alist '("py" . "src python")))
+  (add-to-list 'org-structure-template-alist '("py" . "src python"))
+)
 
-;; Automatically tangle our Emacs.org config file when we save it
 (defun efs/org-babel-tangle-config ()
-  (when (string-equal (file-name-directory (buffer-file-name))
-                      (expand-file-name user-emacs-directory))
+  (when (string-equal (file-name-base (buffer-file-name)) "EmacsConfig")
     ;; Dynamic scoping to the rescue
     (let ((org-confirm-babel-evaluate nil))
-      (org-babel-tangle))))
+         (org-babel-tangle))))
 
 (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
 
@@ -515,8 +518,8 @@
   ("C-c p" . projectile-command-map)
   :init
   ;; NOTE: Set this to the folder where you keep your Git repos!
-  (when (file-directory-p "~/Projects/Code")
-    (setq projectile-project-search-path '("~/Projects/Code")))
+  (when (file-directory-p "~/proj")
+    (setq projectile-project-search-path '("~/proj")))
   (setq projectile-switch-project-action #'projectile-dired))
 
 (use-package counsel-projectile
