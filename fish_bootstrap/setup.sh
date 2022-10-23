@@ -13,6 +13,9 @@ me=$(readlink -f "${BASH_SOURCE[0]}")
 CURDIR=$(cd -- "$(dirname -- "${me}")" &> /dev/null && pwd)
 source "$CURDIR/helpers.sh"
 
+# build nvim:
+# sudo apt-get install ninja-build gettext libtool libtool-bin autoconf automake cmake g++ pkg-config unzip curl doxygen
+
 apt_pkgs="\
   build-essential \
   cargo \
