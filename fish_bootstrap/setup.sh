@@ -172,18 +172,36 @@ if ! which conda; then
   # conda config --set channel_priority false
   conda install -y conda-libmamba-solver
   conda install -y -c conda-forge mamba
+  conda run -n base pip install poetry
   additional_install="\
     jupyter \
     jupyterlab \
     nb_conda_kernels \
     pdm \
-    cookiecutter \
+    cookiecutter
   "
   log "Installing via mamba:\n$additional_install"
   mamba install -y -c conda-forge $additional_install
 else
   log "Skip conda install"
 fi
+
+
+echo > ~/.cookiecutterrc <<EOF
+# https://cookiecutter.readthedocs.io/en/2.1.1/advanced/user_config.html#user-config	
+default_context:
+  full_name: "Toni Kukurin"
+  email: "tkukurin@gmail.com"
+  github_username: tkukurin
+
+cookiecutters_dir: $HOME/proj/
+
+replay_dir: $HOME/proj/cookiecutter_replays
+
+abbreviations:
+  gh: https://github.com/{0}.git
+
+EOF
 
 log "PDM setup"
 grep -q "pep582" ~/.bashrc \
