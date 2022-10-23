@@ -235,7 +235,14 @@ git clone git@github.com:syl20bnr/spacemacs.git --depth 1
 git clone git@github.com:doomemacs/doomemacs.git --depth 1
 git clone git@github.com:seagle0128/.emacs.d.git centauremacs --depth 1
 git clone git@github.com:rememberYou/.emacs.d.git rememberyouemacs --depth 1
-cd -
+
+log "Trying doomemacs installation"
+cd doomemacs
+bin/doom install || loge "failed doomemacs install"
+bin/doom sync || loge "failed doomemacs sync"
+cd ..
+
+cd "$CURDIR"
 
 log "Vim setup"
 curl -fLo ./vim/autoload/plug.vim --create-dirs \
