@@ -226,6 +226,17 @@ log "NVM setup"
 nvm install latest || logw "nvm latest install failed"
 export nvm_default_version='latest'
 
+log "Downloading some configs from git"
+_addon_dir="$CURDIR/addon"
+mkdir -p "$_addon_dir"
+cd "$_addon_dir"
+git clone https://github.com/NvChad/NvChad --depth 1
+git clone git@github.com:syl20bnr/spacemacs.git --depth 1
+git clone git@github.com:doomemacs/doomemacs.git --depth 1
+git clone git@github.com:seagle0128/.emacs.d.git centauremacs --depth 1
+git clone git@github.com:rememberYou/.emacs.d.git rememberyouemacs --depth 1
+cd -
+
 log "Vim setup"
 curl -fLo ./vim/autoload/plug.vim --create-dirs \
   https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
@@ -242,7 +253,30 @@ log "Emacs setup"
 # cf. https://wikemacs.org/wiki/Emacs_server
 # if you want to setup systemd.
 # otherwise https://stackoverflow.com/questions/5570451/how-to-start-emacs-server-only-if-it-is-not-started
-[[ -d ~/.emacs.d ]] || ln -s "$CURDIR/emacs" ~/.emacs.d
+[[ -d ~/.emacs.default ]] || ln -s "$CURDIR/emacs" ~/.emacs.default
+
+# c/p from the chemacs2 install suggestion:
+# https://github.com/plexus/chemacs2 for easy profile switching
+# 
+# == Example ==
+# emacs --daemon &  # default
+# emacs --with-profile doom --daemon &
+# emacsclient -c -s gnu -a emacs
+# emacsclient -c -s doom -a emacs
+# =============
+#
+# [ -f ~/.emacs ] && mv ~/.emacs ~/.emacs.bak
+# [ -d ~/.emacs.d ] && mv ~/.emacs.d ~/.emacs.default
+log "Chemacs setup for profile switching"
+[[ -d ~/.emacs.d ]] || git clone https://github.com/plexus/chemacs2.git ~/.emacs.d
+[[ -f "$HOME/.emacs-profiles.el" ]] || cat >> $HOME/.emacs-profiles.el << EOF
+(("default" . ((user-emacs-directory . "~/.emacs.default")))
+ ("spacemacs" . ((user-emacs-directory . "$_addon_dir/spacemacs")))
+ ("doom" . ((user-emacs-directory . "$_addon_dir/doomemacs")
+            (env . (("DOOMDIR" . "$_addon_dir/doomemacs/cfg")))))
+)
+EOF
+
 # LSPs in the emacs org config
 npm install -g typescript-language-server typescript
 # NOTE: python-language-server is unmaintained
