@@ -25,6 +25,8 @@ alias gp='git pull'
 alias gu='git push'
 alias gpom='git push origin master'
 
-alias ipy='ipython --no-banner --TerminalInteractiveShell.editing_mode=vi --InteractiveShellApp.extensions autoreload --InteractiveShellApp.exec_lines "%autoreload 2"'
+# Moved this to ~/.ipython/profile_default/ipython_config.py
+# alias ipy='ipython --no-banner --TerminalInteractiveShell.editing_mode=vi --InteractiveShellApp.extensions autoreload --InteractiveShellApp.exec_lines "%autoreload 2"'
+alias pullall='for d in *; echo $d ; cd $d && git pull && cd -; end'
 
 # vim: syntax=bash
