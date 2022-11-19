@@ -15,6 +15,10 @@ source "$CURDIR/helpers.sh"
 
 # build nvim:
 # sudo apt-get install ninja-build gettext libtool libtool-bin autoconf automake cmake g++ pkg-config unzip curl doxygen
+#
+# dirvish (emacs):
+# https://github.com/alexluigit/dirvish
+# sudo apt install fd-find poppler-utils ffmpegthumbnailer mediainfo imagemagick tar unzip
 
 apt_pkgs="\
   build-essential \
@@ -32,6 +36,7 @@ apt_pkgs="\
   # `vterm` for emacs
   cmake \
   libtool-bin \
+  libvterm-dev
 "
 log "Installing from apt:\n$apt_pkgs"
 
@@ -169,16 +174,17 @@ if ! which conda; then
   conda config --add channels conda-forge
   log "Installing mamba"
   # https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-channels.html#strict-channel-priority
-  # conda config --set channel_priority false
+  # Libmamba should suffice in the future.
   conda install -y conda-libmamba-solver
+  export CONDA_SOLVER=libmamba
   conda install -y -c conda-forge mamba
-  conda run -n base pip install poetry
   additional_install="\
     jupyter \
     jupyterlab \
     nb_conda_kernels \
     pdm \
-    cookiecutter
+    cookiecutter \
+    poetry
   "
   log "Installing via mamba:\n$additional_install"
   mamba install -y -c conda-forge $additional_install
@@ -186,13 +192,60 @@ else
   log "Skip conda install"
 fi
 
+_ipy=$(ipython locate)
+mkdir -p "${_ipy}/profile_default/"
+cat > "${_ipy}/profile_default/ipython_config.py" <<'EOF'
+lines = [x.strip() for x in '''
+  import logging
+  import warnings; warnings.filterwarnings("once")
+  import datetime as dt
+
+  import json
+  import numpy as np
+  import pandas as pd
+  import scipy as sp
+  import matplotlib.pyplot as plt
+
+  import transformers
+  import datasets
+  import evaluate
+
+  import requests as req
+  import functools as ft
+  import itertools as it
+  import collections as cols
+  import dataclasses as dcls
+
+  from types import SimpleNamespace as ns
+  from collections import namedtuple as nt
+
+  from pathlib import Path
+'''.split('\n')]
+
+c.InteractiveShellApp.exec_lines = [
+    '%load_ext autoreload',
+    '%autoreload 2',
+    'import logging; '
+    'logging.basicConfig('
+        'format="[%(levelname)s:%(asctime)s] %(message)s", '
+        'datefmt="%m%d@%H%M", '
+        'level=logging.INFO); '
+    'L = logging.getLogger("notebook");'
+    'L.setLevel(logging.DEBUG)',
+    *lines
+]
+EOF
+
 
 echo > ~/.cookiecutterrc <<EOF
 # https://cookiecutter.readthedocs.io/en/2.1.1/advanced/user_config.html#user-config	
 default_context:
   full_name: "Toni Kukurin"
+  name: "Toni Kukurin"
+  author_name: "Toni Kukurin"
   email: "tkukurin@gmail.com"
   github_username: tkukurin
+  username: tkukurin
 
 cookiecutters_dir: $HOME/proj/
 
@@ -315,6 +368,11 @@ fi
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
+
+# make sure conda uses the fast resolver
+# https://github.com/conda-incubator/conda-libmamba-solver
+export CONDA_SOLVER=libmamba
+export CONDA_EXPERIMENTAL_SOLVER=libmamba
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
