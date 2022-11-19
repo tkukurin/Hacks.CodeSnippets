@@ -234,6 +234,8 @@ c.InteractiveShellApp.exec_lines = [
     'L.setLevel(logging.DEBUG)',
     *lines
 ]
+
+c.TerminalInteractiveShell.editing_mode = 'vi'
 EOF
 
 
