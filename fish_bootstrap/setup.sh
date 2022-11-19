@@ -149,6 +149,8 @@ zoxide init fish | source || echo "WARN: zoxide plugin fail?"
 fish_ssh_agent || echo "WARN: fish_ssh_agent missing?"
 fish_vi_key_bindings
 
+abbr pullall 'for d in *; echo $d ; cd $d && git pull && cd -; end'
+
 # END inserted by install script }}}
 EOF
 fi
@@ -352,6 +354,8 @@ else
   cat >> ~/.bashrc << 'EOF'
 
 # START inserted by install script {{{
+
+alias pullall='for d in *; echo $d ; cd $d && git pull && cd -; end'
 
 if [ -d "$HOME/go/bin" ]; then
   export PATH="$HOME/go/bin:$PATH"
